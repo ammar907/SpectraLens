@@ -1416,15 +1416,25 @@ function buildDetailTabs(r, uid) {
 
 function buildCompoundBlock(img, label) {
   const r = img.key_regions || {};
+  const confColor = img.identification_confidence === 'High' ? 'var(--green)' : img.identification_confidence === 'Medium' ? 'var(--amber)' : 'var(--red)';
   return `<div class="info-block">
     <div class="label">${label}</div>
     <div class="compound-big">${img.compound_name || 'Unknown Compound'}</div>
     <div class="formula-big">${img.chemical_formula || '—'}</div>
     <div class="meta-chips">
-      ${img.hit_no ? `<span class="chip">HIT# ${img.hit_no}</span>` : ''}
-      ${img.sdbs_no ? `<span class="chip">SDBS# ${img.sdbs_no}</span>` : ''}
+      ${img.identification_confidence ? `<span class="chip" style="color:${confColor};border-color:${confColor}">Confidence: ${img.identification_confidence}</span>` : ''}
       ${img.sample_type ? `<span class="chip">${img.sample_type}</span>` : ''}
     </div>
+    ${img.identification_reasoning ? `
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:7px;padding:12px;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--teal);margin-bottom:6px">🔬 How AI Identified This Compound</div>
+      <div style="font-size:13px;color:var(--ink2);line-height:1.6">${img.identification_reasoning}</div>
+    </div>` : ''}
+    ${img.possible_alternatives ? `
+    <div style="background:var(--amber-light);border:1px solid rgba(184,92,26,0.2);border-radius:7px;padding:10px;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--amber);margin-bottom:4px">Possible Alternatives</div>
+      <div style="font-size:13px;color:var(--ink2)">${img.possible_alternatives}</div>
+    </div>` : ''}
     <div class="curve-text">${img.curve_description || ''}</div>
   </div>`;
 }
