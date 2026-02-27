@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://spectralens-production.up.railway.app/sitemap.xml
