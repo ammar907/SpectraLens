@@ -2,200 +2,179 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<meta name="google-site-verification" content="P8Zytb0rGqAcWqGS7YabJ79YlMCjktxgWtC74mAG1uI" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SpectraLens — Free IR Spectrum Analyzer & Comparison Tool</title>
 <meta name="description" content="SpectraLens is a free AI-powered IR spectrum analysis tool. Upload 2 to 400 infrared spectrum images to identify chemical compounds, compare peak patterns, and get similarity scores instantly.">
 <meta name="keywords" content="IR spectrum analyzer, infrared spectroscopy tool, spectrum comparison, chemical compound identification, IR spectra similarity, FTIR analysis, peak comparison, free spectrum tool, chemistry analyzer">
-<meta name="author" content="SpectraLens">
 <meta name="robots" content="index, follow">
-<meta name="theme-color" content="#1a6b5e">
 <link rel="canonical" href="https://spectralens-production.up.railway.app/">
 <meta property="og:title" content="SpectraLens — Free IR Spectrum Analyzer">
-<meta property="og:description" content="Upload 2 to 400 IR spectrum images. AI identifies compounds from curve shape, compares peaks, scores similarity. Free to use.">
+<meta property="og:description" content="Upload 2 to 400 IR spectrum images. AI identifies compounds, compares peak patterns, and scores similarity. Free to use.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://spectralens-production.up.railway.app/">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SpectraLens — Free IR Spectrum Analyzer">
-<meta name="twitter:description" content="AI-powered IR spectrum comparison. Upload 2–400 images, identify compounds from curves, compare peaks.">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"SpectraLens","description":"Free AI-powered IR spectrum analysis and comparison tool for chemistry. Identifies chemical compounds from curve shape. Supports bulk comparison of up to 400 infrared spectrum images.","url":"https://spectralens-production.up.railway.app/","applicationCategory":"Science","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"featureList":["IR spectrum curve analysis","Chemical compound identification from curve shape","Bulk image comparison up to 400 images","Peak pattern comparison","Similarity scoring","Compound library download","CSV export"]}
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SpectraLens","description":"Free AI-powered IR spectrum analysis and comparison tool","url":"https://spectralens-production.up.railway.app/","applicationCategory":"Science","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --white:#ffffff;--off:#f7f6f3;--stone:#e8e5df;--mid:#c4bfb5;
-  --ink:#1a1916;--ink2:#3d3a34;--ink3:#6b6760;
-  --teal:#1a6b5e;--teal-light:#e8f4f1;--teal-mid:#2a9d8f;
-  --amber:#b85c1a;--amber-light:#fdf0e8;
-  --red:#c0392b;--red-light:#fdf0ef;
-  --green:#1a6b3a;--green-light:#e8f4ec;
-  --border:#e0ddd6;
+  --white:#ffffff;--off:#f7f6f3;--stone:#e8e5df;--mid:#c4bfb5;--ink:#1a1916;--ink2:#3d3a34;--ink3:#6b6760;
+  --teal:#1a6b5e;--teal-l:#e8f4f1;--amber:#b85c1a;--amber-l:#fdf0e8;--red:#c0392b;--red-l:#fdf0ef;
+  --green:#1a6b3a;--green-l:#e8f4ec;--border:#e0ddd6;
   --shadow:0 1px 3px rgba(26,25,22,.08),0 4px 16px rgba(26,25,22,.04);
   --shadow-lg:0 4px 6px rgba(26,25,22,.06),0 12px 40px rgba(26,25,22,.1);
-  --r:10px;
-  --mono:'DM Mono',monospace;
-  --sans:'DM Sans',sans-serif;
-  --serif:'Fraunces',serif;
+  --r:10px;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--serif:'Fraunces',serif;
 }
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--off);color:var(--ink);font-size:15px;line-height:1.6;min-height:100vh}
 
 /* NAV */
-nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center}
-.nav-inner{max-width:1200px;margin:0 auto;width:100%;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;flex-shrink:0}
-.brand-mark{width:30px;height:30px;background:var(--ink);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.brand-mark svg{width:16px;height:16px}
-.brand-name{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:-.3px;color:var(--ink)}
-.nav-links{display:flex;gap:2px;flex-shrink:0}
-.nav-btn{background:none;border:none;padding:6px 12px;border-radius:7px;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink3);cursor:pointer;transition:all .15s;white-space:nowrap}
+nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;height:60px;display:flex;align-items:center}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;padding:0 32px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.brand-mark{width:32px;height:32px;background:var(--ink);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.brand-mark svg{width:18px;height:18px}
+.brand-name{font-family:var(--serif);font-size:18px;font-weight:600;letter-spacing:-.3px}
+.nav-links{display:flex;gap:2px}
+.nav-btn{background:none;border:none;padding:7px 14px;border-radius:7px;font-family:var(--sans);font-size:14px;font-weight:500;color:var(--ink3);cursor:pointer;transition:all .15s}
 .nav-btn:hover{background:var(--off);color:var(--ink)}
 .nav-btn.active{background:var(--ink);color:var(--white)}
 
-/* PAGES */
-.page{display:none}
-.page.active{display:block}
-.container{max-width:1200px;margin:0 auto;padding:0 20px}
+/* LAYOUT */
+.page{display:none}.page.active{display:block}
+.container{max-width:1200px;margin:0 auto;padding:0 32px}
 
 /* HERO */
-.hero{padding:40px 0 32px;border-bottom:1px solid var(--border);background:var(--white)}
-.hero-inner{max-width:1200px;margin:0 auto;padding:0 20px}
-.hero h1{font-family:var(--serif);font-size:clamp(26px,5vw,40px);font-weight:300;line-height:1.15;letter-spacing:-1px;color:var(--ink);max-width:600px;margin-bottom:10px}
+.hero{padding:56px 0 40px;border-bottom:1px solid var(--border);background:var(--white)}
+.hero-inner{max-width:1200px;margin:0 auto;padding:0 32px}
+.hero h1{font-family:var(--serif);font-size:40px;font-weight:300;line-height:1.15;letter-spacing:-1px;max-width:600px;margin-bottom:12px}
 .hero h1 em{font-style:italic;color:var(--teal)}
-.hero p{color:var(--ink3);font-size:15px;max-width:480px;margin-bottom:24px}
-.hero-stats{display:flex;gap:24px;flex-wrap:wrap}
+.hero p{color:var(--ink3);font-size:16px;max-width:480px;margin-bottom:28px}
+.hero-stats{display:flex;gap:32px}
 .stat{display:flex;flex-direction:column}
-.stat-num{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--ink);line-height:1}
-.stat-label{font-size:11px;color:var(--ink3);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.stat-num{font-family:var(--mono);font-size:22px;font-weight:500;line-height:1}
+.stat-label{font-size:12px;color:var(--ink3);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
 
 /* MAIN */
-.main{padding:32px 0 80px}
+.main{padding:40px 0 80px}
 
 /* PANEL */
 .panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
-.panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.panel-title{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.2px}
-.panel-subtitle{font-size:12px;color:var(--ink3);margin-top:1px}
-.panel-body{padding:20px}
+.panel-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-size:14px;font-weight:600;letter-spacing:-.2px}
+.panel-subtitle{font-size:13px;color:var(--ink3);margin-top:2px}
+.panel-body{padding:24px}
 
-/* DROP ZONE */
-.dropzone{border:2px dashed var(--border);border-radius:8px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--off)}
-.dropzone:hover,.dropzone.drag-over{border-color:var(--teal);background:var(--teal-light)}
-.dropzone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.dz-icon{width:44px;height:44px;background:var(--white);border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:var(--shadow)}
-.dz-icon svg{width:20px;height:20px;color:var(--teal)}
-.dz-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px}
+/* DROPZONE */
+.dropzone{border:2px dashed var(--border);border-radius:8px;padding:48px 24px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--off)}
+.dropzone:hover,.dropzone.drag-over{border-color:var(--teal);background:var(--teal-l)}
+.dropzone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.dz-icon{width:48px;height:48px;background:var(--white);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:var(--shadow)}
+.dz-icon svg{width:22px;height:22px;color:var(--teal)}
+.dz-title{font-size:15px;font-weight:500;margin-bottom:4px}
 .dz-sub{font-size:13px;color:var(--ink3)}
 .dz-sub span{color:var(--teal);font-weight:500;text-decoration:underline;text-underline-offset:2px}
 
 /* FILE GRID */
-.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;margin-top:14px;max-height:280px;overflow-y:auto}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:16px;max-height:280px;overflow-y:auto}
 .file-thumb{position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--border);background:var(--white);aspect-ratio:1}
 .file-thumb img{width:100%;height:100%;object-fit:cover}
-.file-thumb .rm{position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(26,25,22,.7);border:none;border-radius:50%;color:white;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center}
-.file-thumb:hover .rm{display:flex}
-.file-count-badge{display:inline-flex;align-items:center;gap:6px;background:var(--teal-light);color:var(--teal);border:1px solid rgba(26,107,94,.2);padding:5px 12px;border-radius:20px;font-size:13px;font-weight:500;margin-top:10px}
+.file-thumb .rm-btn{position:absolute;top:4px;right:4px;width:18px;height:18px;background:rgba(26,25,22,.7);border:none;border-radius:50%;color:white;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.file-thumb:hover .rm-btn{display:flex}
+.file-count{display:inline-flex;align-items:center;gap:6px;background:var(--teal-l);color:var(--teal);border:1px solid rgba(26,107,94,.2);padding:5px 12px;border-radius:20px;font-size:13px;font-weight:500;margin-top:12px}
 
 /* OPTIONS */
-.options-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
-.field label{display:block;font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
-.field select{width:100%;padding:9px 32px 9px 12px;border:1px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--white);appearance:none;outline:none;transition:border .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b6760' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.options-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.field select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--white);appearance:none;outline:none;transition:border .15s}
 .field select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(26,107,94,.1)}
+.select-wrap{position:relative}
+.select-wrap::after{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--ink3);pointer-events:none}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:8px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;border:none;text-decoration:none;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;border:none;text-decoration:none}
 .btn-primary{background:var(--ink);color:var(--white)}
 .btn-primary:hover{background:var(--ink2);transform:translateY(-1px);box-shadow:var(--shadow-lg)}
-.btn-primary:disabled{opacity:.45;pointer-events:none;transform:none}
+.btn-primary:disabled{opacity:.45;pointer-events:none}
 .btn-outline{background:var(--white);color:var(--ink);border:1px solid var(--border)}
 .btn-outline:hover{border-color:var(--ink3);background:var(--off)}
-.btn-teal{background:var(--teal);color:var(--white)}
-.btn-teal:hover{background:var(--teal-mid);transform:translateY(-1px)}
 .btn-sm{padding:7px 14px;font-size:13px}
-.action-row{display:flex;align-items:center;gap:10px;margin-top:20px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap}
+.action-row{display:flex;align-items:center;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
 .pair-estimate{margin-left:auto;font-size:13px;color:var(--ink3);font-family:var(--mono)}
 .pair-estimate strong{color:var(--teal)}
 
 /* PROGRESS */
-.progress-panel{margin-top:20px;display:none}
+.progress-panel{margin-top:24px;display:none}
 .progress-panel.show{display:block}
-.progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .progress-label{font-size:14px;font-weight:500}
 .progress-pct{font-family:var(--mono);font-size:14px;color:var(--teal)}
-.progress-track{height:6px;background:var(--stone);border-radius:3px;overflow:hidden;margin-bottom:6px}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal-mid));border-radius:3px;transition:width .4s ease;width:0%}
-.progress-sub{font-size:12px;color:var(--ink3)}
+.progress-track{height:6px;background:var(--stone);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),#2a9d8f);border-radius:3px;transition:width .4s ease;width:0%}
+.progress-sub{font-size:13px;color:var(--ink3)}
 
 /* RESULTS */
-.results-section{margin-top:28px;display:none}
+.results-section{margin-top:32px;display:none}
 .results-section.show{display:block}
-.results-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-.results-title{font-family:var(--serif);font-size:clamp(20px,4vw,26px);font-weight:300;letter-spacing:-.5px;margin-right:auto}
-.filter-tabs{display:flex;gap:3px;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:3px}
-.filter-tab{padding:5px 10px;border-radius:5px;font-size:12px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--ink3);transition:all .15s}
+.results-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.results-title{font-family:var(--serif);font-size:24px;font-weight:300;letter-spacing:-.5px;margin-right:auto}
+.filter-tabs{display:flex;gap:4px;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:3px}
+.filter-tab{padding:5px 12px;border-radius:6px;font-size:13px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--ink3);transition:all .15s}
 .filter-tab.active{background:var(--ink);color:var(--white)}
 
-/* SUMMARY */
-.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-.summary-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
-.sc-num{font-family:var(--mono);font-size:26px;font-weight:500;line-height:1;margin-bottom:3px}
-.sc-label{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px}
+/* SUMMARY CARDS */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.summary-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px}
+.sc-num{font-family:var(--mono);font-size:28px;font-weight:500;line-height:1;margin-bottom:4px}
+.sc-label{font-size:12px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px}
 
 /* RESULT CARDS */
-.results-list{display:flex;flex-direction:column;gap:10px}
+.results-list{display:flex;flex-direction:column;gap:12px}
 .result-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s}
 .result-card:hover{box-shadow:var(--shadow-lg)}
-.result-card-header{padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;flex-wrap:wrap}
-.pair-names{flex:1;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;min-width:0;flex-wrap:wrap}
-.cname{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--off);padding:3px 8px;border-radius:5px;border:1px solid var(--border);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
-.vs-divider{font-size:10px;color:var(--mid);font-weight:500;text-transform:uppercase;letter-spacing:1px;flex-shrink:0}
-.score-pill{font-family:var(--mono);font-size:13px;font-weight:500;padding:3px 10px;border-radius:20px;flex-shrink:0}
-.score-high{background:var(--green-light);color:var(--green)}
-.score-mid{background:var(--amber-light);color:var(--amber)}
-.score-low{background:var(--red-light);color:var(--red)}
-.badge-same{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:4px;flex-shrink:0}
-.badge-yes{background:var(--green-light);color:var(--green)}
-.badge-no{background:var(--red-light);color:var(--red)}
-.chevron{width:18px;height:18px;color:var(--mid);transition:transform .2s;flex-shrink:0}
+.result-card-header{padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none}
+.pair-names{flex:1;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500}
+.cname{font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--off);padding:3px 9px;border-radius:5px;border:1px solid var(--border)}
+.vs-divider{font-size:11px;color:var(--mid);font-weight:500;text-transform:uppercase;letter-spacing:1px}
+.score-pill{font-family:var(--mono);font-size:14px;font-weight:500;padding:4px 12px;border-radius:20px;flex-shrink:0}
+.score-high{background:var(--green-l);color:var(--green)}
+.score-mid{background:var(--amber-l);color:var(--amber)}
+.score-low{background:var(--red-l);color:var(--red)}
+.badge-same{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:4px}
+.badge-yes{background:var(--green-l);color:var(--green)}
+.badge-no{background:var(--red-l);color:var(--red)}
+.chevron{width:20px;height:20px;color:var(--mid);transition:transform .2s;flex-shrink:0}
 .result-card.open .chevron{transform:rotate(180deg)}
 .result-card-body{display:none;border-top:1px solid var(--border)}
 .result-card.open .result-card-body{display:block}
 
 /* DETAIL TABS */
-.detail-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 18px;background:var(--off);overflow-x:auto;-webkit-overflow-scrolling:touch}
-.dtab{padding:10px 14px;font-size:12px;font-weight:500;color:var(--ink3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.detail-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 20px;background:var(--off)}
+.dtab{padding:11px 16px;font-size:13px;font-weight:500;color:var(--ink3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
 .dtab:hover{color:var(--ink)}
 .dtab.active{color:var(--teal);border-bottom-color:var(--teal)}
-.detail-pane{display:none;padding:18px}
+.detail-pane{display:none;padding:20px}
 .detail-pane.active{display:block}
 
-/* COMPOUND COLS */
-.col2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.info-block{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:14px}
-.info-block .label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:10px}
-.compound-big{font-family:var(--serif);font-size:18px;font-weight:600;line-height:1.2;margin-bottom:3px}
-.formula-big{font-family:var(--mono);font-size:15px;color:var(--teal);margin-bottom:10px}
-.meta-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
-.chip{font-size:11px;font-family:var(--mono);padding:3px 7px;border-radius:4px;background:var(--white);border:1px solid var(--border);color:var(--ink3)}
+/* COLUMNS */
+.col2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* INFO BLOCK */
+.info-block{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:16px}
+.info-block .label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:12px}
+.compound-big{font-family:var(--serif);font-size:20px;font-weight:600;line-height:1.2;margin-bottom:4px}
+.formula-big{font-family:var(--mono);font-size:16px;color:var(--teal);margin-bottom:12px}
+.meta-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font-size:11px;font-family:var(--mono);padding:3px 8px;border-radius:4px;background:var(--white);border:1px solid var(--border);color:var(--ink3)}
 .curve-text{font-size:13px;color:var(--ink3);line-height:1.6}
 
-/* REASONING BOX */
-.reasoning-box{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:12px;margin-bottom:10px}
-.reasoning-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--teal);margin-bottom:6px}
-.reasoning-text{font-size:13px;color:var(--ink2);line-height:1.6}
-.alt-box{background:var(--amber-light);border:1px solid rgba(184,92,26,.2);border-radius:7px;padding:10px;margin-bottom:10px}
-.alt-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--amber);margin-bottom:4px}
-.alt-text{font-size:13px;color:var(--ink2)}
-
-/* TABLES */
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* TABLE */
+.table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead tr{border-bottom:1px solid var(--border)}
-th{text-align:left;padding:8px 10px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);white-space:nowrap}
-td{padding:8px 10px;border-bottom:1px solid var(--stone)}
+th{text-align:left;padding:9px 12px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3)}
+td{padding:9px 12px;border-bottom:1px solid var(--stone)}
 tr:last-child td{border-bottom:none}
 .wn{font-family:var(--mono);font-weight:500;color:var(--teal)}
 .tr{font-family:var(--mono);color:var(--amber)}
@@ -204,87 +183,67 @@ tr.match-tr{background:rgba(26,107,58,.03)}
 tr.nomatch-tr{background:rgba(192,57,43,.03)}
 
 /* COMPARISON */
-.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.comp-box{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
-.comp-box .box-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:7px}
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.comp-box{background:var(--off);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.comp-box .box-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:8px}
 .comp-box p{font-size:13px;color:var(--ink2);line-height:1.6}
-.sim-bar-wrap{margin-bottom:18px}
+.sim-bar-wrap{margin-bottom:20px}
 .sim-bar-top{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px}
 .sim-bar-top .pct{font-family:var(--mono);font-weight:500;color:var(--teal)}
 .sim-bar{height:8px;background:var(--stone);border-radius:4px;overflow:hidden}
-.sim-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--teal-mid))}
-.sim-lists{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-.sim-list-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
-.sim-list-title.pos{color:var(--green)}
-.sim-list-title.neg{color:var(--red)}
+.sim-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),#2a9d8f)}
+.sim-lists{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.sim-list-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.sim-list-title.pos{color:var(--green)}.sim-list-title.neg{color:var(--red)}
 .sim-list{list-style:none}
-.sim-list li{font-size:13px;padding:6px 10px;border-radius:6px;margin-bottom:4px;line-height:1.5}
-.sim-list.pos li{background:var(--green-light);color:var(--ink2)}
-.sim-list.neg li{background:var(--red-light);color:var(--ink2)}
-.conclusion-box{background:var(--off);border-left:3px solid var(--teal);padding:12px 14px;border-radius:0 6px 6px 0;font-size:13px;color:var(--ink2);line-height:1.7}
-.conclusion-box .clabel{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--teal);margin-bottom:5px}
+.sim-list li{font-size:13px;padding:7px 10px;border-radius:6px;margin-bottom:4px;line-height:1.5}
+.sim-list.pos li{background:var(--green-l);color:var(--ink2)}
+.sim-list.neg li{background:var(--red-l);color:var(--ink2)}
+.conclusion-box{background:var(--off);border-left:3px solid var(--teal);padding:14px 16px;border-radius:0 6px 6px 0;font-size:14px;color:var(--ink2);line-height:1.7}
+.conclusion-box .clabel{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--teal);margin-bottom:6px}
 
 /* REGIONS */
-.regions-wrap{margin-top:14px}
-.region-card{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:8px}
-.region-label{font-family:var(--mono);font-size:11px;color:var(--teal);margin-bottom:4px;font-weight:500}
+.regions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.region-card{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:12px}
+.region-label{font-family:var(--mono);font-size:11px;color:var(--teal);margin-bottom:5px;font-weight:500}
 .region-text{font-size:12px;color:var(--ink3);line-height:1.5}
 
-/* LIBRARY PAGE */
-.lib-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-.lib-title{font-family:var(--serif);font-size:clamp(22px,4vw,28px);font-weight:300;letter-spacing:-.5px}
-.lib-stats{display:flex;gap:16px;flex-wrap:wrap}
-.lib-stat{font-size:13px;color:var(--ink3);font-family:var(--mono)}
-.lib-stat strong{color:var(--teal)}
-.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
-.lib-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);transition:box-shadow .2s}
-.lib-card:hover{box-shadow:var(--shadow-lg)}
-.lib-compound{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:3px;line-height:1.2}
-.lib-formula{font-family:var(--mono);font-size:15px;color:var(--teal);margin-bottom:10px}
-.lib-row{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);padding:4px 0;border-bottom:1px solid var(--stone)}
-.lib-row:last-child{border-bottom:none}
-.lib-row strong{color:var(--ink2);font-weight:500}
-.lib-chips{display:flex;gap:4px;flex-wrap:wrap;margin:10px 0}
-.lib-chip{font-size:11px;padding:2px 7px;border-radius:3px;background:var(--teal-light);color:var(--teal);font-weight:500}
-.conf-high{color:var(--green);font-weight:600}
-.conf-med{color:var(--amber);font-weight:600}
-.conf-low{color:var(--red);font-weight:600}
+/* CHART */
+.chart-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:24px}
+.chart-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.chart-sub{font-size:13px;color:var(--ink3);margin-bottom:20px}
+.chart-container{position:relative;height:320px;width:100%}
+.chart-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink3)}
+.legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
 
 /* HISTORY */
-.history-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-.history-title{font-family:var(--serif);font-size:clamp(22px,4vw,28px);font-weight:300;letter-spacing:-.5px}
-.htable-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.htable{width:100%;border-collapse:collapse;min-width:600px;font-size:13px}
-.htable th{background:var(--off);padding:10px 12px;text-align:left;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);border-bottom:1px solid var(--border);white-space:nowrap}
-.htable td{padding:10px 12px;border-bottom:1px solid var(--stone)}
+.history-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.history-title{font-family:var(--serif);font-size:28px;font-weight:300;letter-spacing:-.5px}
+.history-table-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;overflow-x:auto}
+.htable{width:100%;border-collapse:collapse;min-width:700px;font-size:13px}
+.htable th{background:var(--off);padding:11px 14px;text-align:left;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);border-bottom:1px solid var(--border)}
+.htable td{padding:11px 14px;border-bottom:1px solid var(--stone)}
 .htable tr:last-child td{border-bottom:none}
 .htable tr:hover td{background:var(--off)}
 .score-cell{font-family:var(--mono);font-weight:500}
 .score-h{color:var(--green)}.score-m{color:var(--amber)}.score-l{color:var(--red)}
 
-/* EMPTY */
-.empty-state{text-align:center;padding:60px 20px}
-.empty-icon{font-size:36px;margin-bottom:12px}
-.empty-title{font-family:var(--serif);font-size:18px;font-weight:300;margin-bottom:5px}
-.empty-sub{font-size:13px;color:var(--ink3)}
+/* EMPTY / ERROR */
+.empty-state{text-align:center;padding:80px 20px}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-family:var(--serif);font-size:20px;font-weight:300;margin-bottom:6px}
+.empty-sub{font-size:14px;color:var(--ink3)}
+.error-banner{background:var(--red-l);border:1px solid rgba(192,57,43,.25);border-radius:8px;padding:14px 16px;font-size:13px;color:var(--red);margin-top:16px;display:none}
 
-/* ERROR */
-.error-banner{background:var(--red-light);border:1px solid rgba(192,57,43,.25);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--red);margin-top:14px;display:none}
-
-/* MOBILE */
-@media(max-width:640px){
-  .col2,.comp-grid,.sim-lists,.options-row{grid-template-columns:1fr}
+/* RESPONSIVE */
+@media(max-width:768px){
+  .container,.hero-inner,.nav-inner{padding:0 16px}
   .summary-grid{grid-template-columns:repeat(2,1fr)}
+  .col2,.comp-grid,.sim-lists,.options-row{grid-template-columns:1fr}
+  .regions-grid{grid-template-columns:1fr}
+  .hero h1{font-size:28px}
   .results-toolbar{flex-direction:column;align-items:flex-start}
-  .action-row{flex-direction:column;align-items:stretch}
-  .action-row .btn{justify-content:center}
-  .pair-estimate{margin-left:0}
-  .lib-toolbar,.history-toolbar{flex-direction:column;align-items:flex-start}
-  .filter-tabs{overflow-x:auto;width:100%}
-}
-@media(max-width:400px){
-  .brand-name{display:none}
-  .cname{max-width:120px}
 }
 </style>
 </head>
@@ -300,7 +259,6 @@ tr.nomatch-tr{background:rgba(192,57,43,.03)}
     </a>
     <div class="nav-links">
       <button class="nav-btn active" onclick="showPage('analyze',this)">Analyze</button>
-      <button class="nav-btn" onclick="showPage('library',this);loadLibrary()">Library</button>
       <button class="nav-btn" onclick="showPage('history',this);loadHistory()">History</button>
     </div>
   </div>
@@ -311,62 +269,77 @@ tr.nomatch-tr{background:rgba(192,57,43,.03)}
   <div class="hero">
     <div class="hero-inner">
       <h1>IR Spectrum<br><em>Comparison Engine</em></h1>
-      <p>Upload 2 to 400 infrared spectrum images. AI identifies compounds from curve shape, compares peaks, and scores similarity.</p>
+      <p>Upload 2 to 400 infrared spectrum images. AI identifies chemical compounds from curve patterns and overlays all spectra in one comparison chart.</p>
       <div class="hero-stats">
         <div class="stat"><span class="stat-num">400</span><span class="stat-label">Max images</span></div>
-        <div class="stat"><span class="stat-num">AI</span><span class="stat-label">Curve Analysis</span></div>
+        <div class="stat"><span class="stat-num">AI</span><span class="stat-label">Powered</span></div>
+        <div class="stat"><span class="stat-num">Chart</span><span class="stat-label">Overlay</span></div>
         <div class="stat"><span class="stat-num">CSV</span><span class="stat-label">Export</span></div>
-        <div class="stat"><span class="stat-num">LIB</span><span class="stat-label">Library</span></div>
       </div>
     </div>
   </div>
+
   <div class="main">
     <div class="container">
       <div class="panel">
         <div class="panel-header">
-          <div><div class="panel-title">Upload Spectrum Images</div><div class="panel-subtitle">JPEG, PNG, WebP — 2 to 400 files</div></div>
+          <div>
+            <div class="panel-title">Upload Spectrum Images</div>
+            <div class="panel-subtitle">JPEG, PNG, WebP — 2 to 400 files</div>
+          </div>
         </div>
         <div class="panel-body">
           <div class="dropzone" id="dropzone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave()" ondrop="handleDrop(event)">
             <input type="file" id="fileInput" multiple accept="image/*" onchange="handleFiles(this.files)">
-            <div class="dz-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <div class="dz-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
             <div class="dz-title">Drop spectrum images here</div>
-            <div class="dz-sub"><span>Browse files</span> or drag and drop · 2–400 images</div>
+            <div class="dz-sub"><span>Browse files</span> or drag and drop</div>
           </div>
+
           <div id="filePreviewArea" style="display:none">
-            <div id="fileCountBadge" class="file-count-badge">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <div id="fileCountBadge" class="file-count">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               <span id="fileCountText">0 files</span>
             </div>
             <div class="file-grid" id="fileGrid"></div>
           </div>
+
           <div class="options-row">
             <div class="field">
               <label>Comparison Mode</label>
-              <select id="modeSelect" onchange="updateEstimate()">
-                <option value="all_pairs">All vs All — every pair</option>
-                <option value="sequential">Sequential — 1→2, 2→3...</option>
-                <option value="vs_first">All vs First image</option>
-              </select>
+              <div class="select-wrap">
+                <select id="modeSelect" onchange="updateEstimate()">
+                  <option value="all_pairs">All vs All — every pair compared</option>
+                  <option value="sequential">Sequential — 1→2, 2→3, 3→4...</option>
+                  <option value="vs_first">All vs First — compare all to image 1</option>
+                </select>
+              </div>
             </div>
             <div class="field">
               <label>Sort Results By</label>
-              <select id="sortSelect">
-                <option value="similarity_desc">Highest Similarity First</option>
-                <option value="similarity_asc">Lowest Similarity First</option>
-                <option value="order">Analysis Order</option>
-              </select>
+              <div class="select-wrap">
+                <select id="sortSelect">
+                  <option value="similarity_desc">Highest Similarity First</option>
+                  <option value="similarity_asc">Lowest Similarity First</option>
+                  <option value="order">Analysis Order</option>
+                </select>
+              </div>
             </div>
           </div>
+
           <div class="action-row">
             <button class="btn btn-primary" id="analyzeBtn" onclick="startAnalysis()" disabled>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               Run Analysis
             </button>
             <button class="btn btn-outline" onclick="clearFiles()">Clear</button>
             <div class="pair-estimate" id="pairEstimate"></div>
           </div>
+
           <div class="error-banner" id="errorBanner"></div>
+
           <div class="progress-panel" id="progressPanel">
             <div class="progress-header">
               <span class="progress-label" id="progressLabel">Analyzing...</span>
@@ -384,37 +357,23 @@ tr.nomatch-tr{background:rgba(192,57,43,.03)}
           <h2 class="results-title">Results</h2>
           <div class="filter-tabs">
             <button class="filter-tab active" onclick="filterResults('all',this)">All</button>
-            <button class="filter-tab" onclick="filterResults('same',this)">Same</button>
+            <button class="filter-tab" onclick="filterResults('same',this)">Same Compound</button>
             <button class="filter-tab" onclick="filterResults('different',this)">Different</button>
             <button class="filter-tab" onclick="filterResults('high',this)">High Match</button>
           </div>
-          <a href="/export-csv" class="btn btn-outline btn-sm">⬇ CSV</a>
-          <a href="/export-library" class="btn btn-teal btn-sm">⬇ Library</a>
+          <a href="/export-csv" class="btn btn-outline btn-sm">⬇ Export CSV</a>
         </div>
         <div class="summary-grid" id="summaryGrid"></div>
-        <div class="results-list" id="resultsList"></div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- LIBRARY PAGE -->
-<div class="page" id="page-library">
-  <div class="main">
-    <div class="container">
-      <div class="lib-toolbar">
-        <div>
-          <h2 class="lib-title">Compound Library</h2>
-          <p style="font-size:13px;color:var(--ink3);margin-top:4px">Organised database of all compounds identified from your spectrum images</p>
+        <!-- OVERLAY CHART -->
+        <div class="chart-panel" id="chartPanel" style="display:none">
+          <div class="chart-title">📊 Spectral Overlay Chart</div>
+          <div class="chart-sub">All analyzed spectra plotted together — compare curve shapes, troughs, and crests visually</div>
+          <div class="chart-container"><canvas id="overlayChart"></canvas></div>
+          <div class="chart-legend" id="chartLegend"></div>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <a href="/export-library" class="btn btn-teal btn-sm">⬇ Download Library CSV</a>
-          <a href="/export-csv" class="btn btn-outline btn-sm">⬇ Analysis History</a>
-        </div>
-      </div>
-      <div class="lib-stats" id="libStats" style="margin-bottom:20px"></div>
-      <div id="libraryContent">
-        <div class="empty-state"><div class="empty-icon">🧪</div><div class="empty-title">Library is empty</div><div class="empty-sub">Run some analyses first — every compound analyzed gets saved here automatically</div></div>
+
+        <div class="results-list" id="resultsList"></div>
       </div>
     </div>
   </div>
@@ -436,221 +395,475 @@ tr.nomatch-tr{background:rgba(192,57,43,.03)}
 </div>
 
 <script>
-let allFiles=[], allResults=[], currentFilter='all', pollTimer=null;
+// ── STATE
+let allFiles = [];
+let allResults = [];
+let currentFilter = 'all';
+let pollTimer = null;
+let overlayChartInstance = null;
 
-function showPage(name,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  if(btn)btn.classList.add('active');
+// Chart colors for up to 20 spectra
+const CHART_COLORS = [
+  '#1a6b5e','#c0392b','#b85c1a','#1a6b3a','#2c3e7a',
+  '#7d3c98','#2e86c1','#d35400','#1abc9c','#e74c3c',
+  '#3498db','#e67e22','#27ae60','#8e44ad','#f39c12',
+  '#16a085','#c0392b','#2980b9','#8e44ad','#d35400'
+];
+
+// ── NAV
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
 }
 
-function handleFiles(files){
-  const arr=Array.from(files);
-  if(arr.length+allFiles.length>400){showError('Maximum 400 images.');return;}
-  allFiles=[...allFiles,...arr];
-  renderFilePreviews();updateEstimate();
-  document.getElementById('analyzeBtn').disabled=allFiles.length<2;
+// ── FILE HANDLING
+function handleFiles(files) {
+  const arr = Array.from(files);
+  if (arr.length + allFiles.length > 400) { showError('Maximum 400 images.'); return; }
+  allFiles = [...allFiles, ...arr];
+  renderFilePreviews();
+  updateEstimate();
+  document.getElementById('analyzeBtn').disabled = allFiles.length < 2;
 }
-function handleDragOver(e){e.preventDefault();document.getElementById('dropzone').classList.add('drag-over')}
-function handleDragLeave(){document.getElementById('dropzone').classList.remove('drag-over')}
-function handleDrop(e){e.preventDefault();document.getElementById('dropzone').classList.remove('drag-over');handleFiles(e.dataTransfer.files)}
 
-function renderFilePreviews(){
-  const area=document.getElementById('filePreviewArea');
-  const grid=document.getElementById('fileGrid');
-  if(!allFiles.length){area.style.display='none';return;}
-  area.style.display='block';
-  document.getElementById('fileCountText').textContent=`${allFiles.length} file${allFiles.length>1?'s':''} selected`;
-  grid.innerHTML=allFiles.slice(0,60).map((f,i)=>{
-    const url=URL.createObjectURL(f);
-    return `<div class="file-thumb"><img src="${url}" alt="${f.name}" title="${f.name}" loading="lazy"><button class="rm" onclick="removeFile(${i})" aria-label="Remove">✕</button></div>`;
+function handleDragOver(e) { e.preventDefault(); document.getElementById('dropzone').classList.add('drag-over'); }
+function handleDragLeave() { document.getElementById('dropzone').classList.remove('drag-over'); }
+function handleDrop(e) { e.preventDefault(); document.getElementById('dropzone').classList.remove('drag-over'); handleFiles(e.dataTransfer.files); }
+
+function renderFilePreviews() {
+  const area = document.getElementById('filePreviewArea');
+  const grid = document.getElementById('fileGrid');
+  if (allFiles.length === 0) { area.style.display = 'none'; return; }
+  area.style.display = 'block';
+  document.getElementById('fileCountText').textContent = `${allFiles.length} file${allFiles.length > 1 ? 's' : ''} selected`;
+  grid.innerHTML = allFiles.slice(0, 60).map((f, i) => {
+    const url = URL.createObjectURL(f);
+    return `<div class="file-thumb"><img src="${url}" title="${f.name}"><button class="rm-btn" onclick="removeFile(${i})">✕</button></div>`;
   }).join('');
-  if(allFiles.length>60) grid.innerHTML+=`<div class="file-thumb" style="display:flex;align-items:center;justify-content:center;background:var(--off);font-size:12px;color:var(--ink3);font-family:var(--mono)">+${allFiles.length-60}</div>`;
-}
-function removeFile(idx){allFiles.splice(idx,1);renderFilePreviews();updateEstimate();document.getElementById('analyzeBtn').disabled=allFiles.length<2;}
-function clearFiles(){allFiles=[];renderFilePreviews();updateEstimate();document.getElementById('analyzeBtn').disabled=true;document.getElementById('resultsSection').classList.remove('show');document.getElementById('progressPanel').classList.remove('show');hideError();}
-
-function updateEstimate(){
-  const mode=document.getElementById('modeSelect').value;
-  const n=allFiles.length;
-  let pairs=0;
-  if(mode==='all_pairs') pairs=n*(n-1)/2;
-  else if(mode==='sequential') pairs=Math.max(0,n-1);
-  else if(mode==='vs_first') pairs=Math.max(0,n-1);
-  const est=document.getElementById('pairEstimate');
-  if(n<2){est.textContent='';return;}
-  const mins=Math.ceil(pairs*8/60);
-  est.innerHTML=`<strong>${pairs}</strong> pair${pairs!==1?'s':''} · ~${mins<1?'<1':mins} min`;
+  if (allFiles.length > 60) grid.innerHTML += `<div class="file-thumb" style="display:flex;align-items:center;justify-content:center;background:var(--off);font-size:12px;color:var(--ink3);font-family:var(--mono)">+${allFiles.length-60} more</div>`;
 }
 
-async function startAnalysis(){
-  if(allFiles.length<2)return;
+function removeFile(idx) {
+  allFiles.splice(idx, 1);
+  renderFilePreviews();
+  updateEstimate();
+  document.getElementById('analyzeBtn').disabled = allFiles.length < 2;
+}
+
+function clearFiles() {
+  allFiles = [];
+  renderFilePreviews();
+  updateEstimate();
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('resultsSection').classList.remove('show');
+  document.getElementById('progressPanel').classList.remove('show');
+  document.getElementById('chartPanel').style.display = 'none';
   hideError();
-  const mode=document.getElementById('modeSelect').value;
-  const formData=new FormData();
-  allFiles.forEach(f=>formData.append('images',f));
-  formData.append('mode',mode);
-  document.getElementById('analyzeBtn').disabled=true;
+}
+
+function updateEstimate() {
+  const mode = document.getElementById('modeSelect').value;
+  const n = allFiles.length;
+  let pairs = mode === 'all_pairs' ? n*(n-1)/2 : Math.max(0, n-1);
+  const est = document.getElementById('pairEstimate');
+  if (n < 2) { est.textContent = ''; return; }
+  const mins = Math.ceil(pairs * 8 / 60);
+  est.innerHTML = `<strong>${pairs}</strong> pair${pairs !== 1 ? 's' : ''} · ~${mins < 1 ? '<1' : mins} min`;
+}
+
+// ── ANALYSIS
+async function startAnalysis() {
+  if (allFiles.length < 2) return;
+  hideError();
+  const mode = document.getElementById('modeSelect').value;
+  const formData = new FormData();
+  allFiles.forEach(f => formData.append('images', f));
+  formData.append('mode', mode);
+
+  document.getElementById('analyzeBtn').disabled = true;
   document.getElementById('progressPanel').classList.add('show');
   document.getElementById('resultsSection').classList.remove('show');
-  setProgress(0,0,'Uploading images...');
-  try{
-    const res=await fetch('/submit',{method:'POST',body:formData});
-    const data=await res.json();
-    if(!res.ok||data.error)throw new Error(data.error||'Upload failed');
-    pollJob(data.job_id,data.total_pairs);
-  }catch(e){
+  document.getElementById('chartPanel').style.display = 'none';
+  setProgress(0, 0, 'Uploading images...');
+
+  try {
+    const res = await fetch('/submit', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Upload failed');
+    pollJob(data.job_id, data.total_pairs);
+  } catch (e) {
     showError(e.message);
-    document.getElementById('analyzeBtn').disabled=false;
+    document.getElementById('analyzeBtn').disabled = false;
     document.getElementById('progressPanel').classList.remove('show');
   }
 }
 
-function pollJob(jobId,total){
-  if(pollTimer)clearInterval(pollTimer);
-  pollTimer=setInterval(async()=>{
-    try{
-      const res=await fetch(`/job/${jobId}`);
-      const job=await res.json();
-      const pct=total>0?Math.round((job.progress/total)*100):0;
-      setProgress(pct,job.progress,`Analyzing pair ${job.progress} of ${total}...`);
-      if(job.status==='complete'||job.status==='error'){
+function pollJob(jobId, total) {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    try {
+      const res = await fetch(`/job/${jobId}`);
+      const job = await res.json();
+      const pct = total > 0 ? Math.round((job.progress / total) * 100) : 0;
+      setProgress(pct, job.progress, `Analyzing pair ${job.progress} of ${total}...`);
+      if (job.status === 'complete' || job.status === 'error') {
         clearInterval(pollTimer);
-        setProgress(100,total,'Complete!');
-        setTimeout(()=>{
+        setProgress(100, total, 'Complete!');
+        setTimeout(() => {
           document.getElementById('progressPanel').classList.remove('show');
-          document.getElementById('analyzeBtn').disabled=false;
-          allResults=job.results||[];
+          document.getElementById('analyzeBtn').disabled = false;
+          allResults = job.results || [];
           renderResults();
-        },600);
+        }, 600);
       }
-    }catch(e){clearInterval(pollTimer);showError('Connection lost. Please try again.');document.getElementById('analyzeBtn').disabled=false;}
-  },2000);
+    } catch (e) {
+      clearInterval(pollTimer);
+      showError('Connection lost. Please try again.');
+      document.getElementById('analyzeBtn').disabled = false;
+    }
+  }, 2000);
 }
 
-function setProgress(pct,done,label){
-  document.getElementById('progressFill').style.width=pct+'%';
-  document.getElementById('progressPct').textContent=pct+'%';
-  document.getElementById('progressLabel').textContent=label;
-  document.getElementById('progressSub').textContent=done>0?`${done} pairs analyzed`:'';
+function setProgress(pct, done, label) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressLabel').textContent = label;
+  document.getElementById('progressSub').textContent = done > 0 ? `${done} pairs analyzed` : '';
 }
 
-function renderResults(){
-  document.getElementById('resultsSection').classList.add('show');
-  renderSummary();renderList(currentFilter);
-  document.getElementById('resultsSection').scrollIntoView({behavior:'smooth',block:'start'});
+// ── RENDER RESULTS
+function renderResults() {
+  const section = document.getElementById('resultsSection');
+  section.classList.add('show');
+  renderSummary();
+  renderOverlayChart();
+  renderList(currentFilter);
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function renderSummary(){
-  const done=allResults.filter(r=>r.status==='done');
-  const errors=allResults.filter(r=>r.status==='error').length;
-  const same=done.filter(r=>r.result?.comparison?.is_same_compound).length;
-  const avg=done.length>0?Math.round(done.reduce((a,r)=>a+(r.result?.comparison?.similarity_score||0),0)/done.length):0;
-  document.getElementById('summaryGrid').innerHTML=`
-    <div class="summary-card"><div class="sc-num">${done.length}</div><div class="sc-label">Analyzed</div></div>
-    <div class="summary-card"><div class="sc-num" style="color:var(--teal)">${avg}%</div><div class="sc-label">Avg Similarity</div></div>
+function renderSummary() {
+  const done = allResults.filter(r => r.status === 'done');
+  const errors = allResults.filter(r => r.status === 'error').length;
+  const same = done.filter(r => r.result?.comparison?.is_same_compound).length;
+  const avgScore = done.length > 0 ? Math.round(done.reduce((a, r) => a + (r.result?.comparison?.similarity_score || 0), 0) / done.length) : 0;
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="summary-card"><div class="sc-num">${done.length}</div><div class="sc-label">Pairs Analyzed</div></div>
+    <div class="summary-card"><div class="sc-num" style="color:var(--teal)">${avgScore}%</div><div class="sc-label">Avg Similarity</div></div>
     <div class="summary-card"><div class="sc-num" style="color:var(--green)">${same}</div><div class="sc-label">Same Compound</div></div>
     <div class="summary-card"><div class="sc-num" style="color:${errors>0?'var(--red)':'var(--ink3)'}">${errors}</div><div class="sc-label">Errors</div></div>`;
 }
 
-function filterResults(filter,btn){
-  currentFilter=filter;
-  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
-  if(btn)btn.classList.add('active');
+// ── OVERLAY CHART
+function renderOverlayChart() {
+  const done = allResults.filter(r => r.status === 'done');
+  if (done.length === 0) return;
+
+  // Collect all unique compounds with their peaks
+  const compoundMap = {};
+  done.forEach(r => {
+    const i1 = r.result?.image1;
+    const i2 = r.result?.image2;
+    if (i1 && i1.major_peaks && i1.major_peaks.length > 0) {
+      const key = i1.compound_name || r.image1_name;
+      if (!compoundMap[key]) compoundMap[key] = { peaks: i1.major_peaks, name: key, formula: i1.chemical_formula || '' };
+    }
+    if (i2 && i2.major_peaks && i2.major_peaks.length > 0) {
+      const key = i2.compound_name || r.image2_name;
+      if (!compoundMap[key]) compoundMap[key] = { peaks: i2.major_peaks, name: key, formula: i2.chemical_formula || '' };
+    }
+  });
+
+  const compounds = Object.values(compoundMap).slice(0, 20);
+  if (compounds.length === 0) return;
+
+  document.getElementById('chartPanel').style.display = 'block';
+
+  // Generate smooth curve data for each compound
+  // X axis: wavenumber 500 to 4000 (reversed like real IR)
+  const xPoints = [];
+  for (let w = 4000; w >= 500; w -= 50) xPoints.push(w);
+
+  const datasets = compounds.map((comp, idx) => {
+    // Build transmittance curve: start at ~90%, dip at peak positions
+    const curveData = xPoints.map(wn => {
+      let transmittance = 90; // baseline high transmittance
+      comp.peaks.forEach(p => {
+        if (p.wavenumber && p.transmittance !== undefined) {
+          const dist = Math.abs(wn - p.wavenumber);
+          const width = 120; // peak width
+          if (dist < width) {
+            const dip = (90 - p.transmittance) * Math.exp(-(dist * dist) / (2 * width * width / 4));
+            transmittance -= dip;
+          }
+        }
+      });
+      return Math.max(0, Math.min(100, transmittance));
+    });
+
+    return {
+      label: `${comp.name}${comp.formula ? ' (' + comp.formula + ')' : ''}`,
+      data: curveData,
+      borderColor: CHART_COLORS[idx % CHART_COLORS.length],
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      pointRadius: 0,
+      tension: 0.4
+    };
+  });
+
+  const ctx = document.getElementById('overlayChart').getContext('2d');
+  if (overlayChartInstance) overlayChartInstance.destroy();
+
+  overlayChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels: xPoints, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: ctx => `${ctx[0].label} cm⁻¹`,
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}% T`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Wavenumber (cm⁻¹)', color: '#6b6760', font: { size: 12 } },
+          ticks: {
+            maxTicksLimit: 12,
+            color: '#6b6760',
+            callback: val => xPoints[val] ? xPoints[val] + '' : ''
+          },
+          grid: { color: '#e8e5df' }
+        },
+        y: {
+          title: { display: true, text: 'Transmittance (%)', color: '#6b6760', font: { size: 12 } },
+          min: 0, max: 100,
+          ticks: { color: '#6b6760' },
+          grid: { color: '#e8e5df' }
+        }
+      }
+    }
+  });
+
+  // Render legend
+  const legend = document.getElementById('chartLegend');
+  legend.innerHTML = compounds.map((comp, idx) => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${CHART_COLORS[idx % CHART_COLORS.length]}"></div>
+      <span>${comp.name}${comp.formula ? ' — ' + comp.formula : ''}</span>
+    </div>`).join('');
+}
+
+// ── FILTER & LIST
+function filterResults(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
   renderList(filter);
 }
 
-function renderList(filter){
-  const sortMode=document.getElementById('sortSelect').value;
-  let results=[...allResults];
-  if(filter==='same') results=results.filter(r=>r.result?.comparison?.is_same_compound);
-  else if(filter==='different') results=results.filter(r=>!r.result?.comparison?.is_same_compound);
-  else if(filter==='high') results=results.filter(r=>(r.result?.comparison?.similarity_score||0)>=70);
-  if(sortMode==='similarity_desc') results.sort((a,b)=>(b.result?.comparison?.similarity_score||0)-(a.result?.comparison?.similarity_score||0));
-  else if(sortMode==='similarity_asc') results.sort((a,b)=>(a.result?.comparison?.similarity_score||0)-(b.result?.comparison?.similarity_score||0));
-  const list=document.getElementById('resultsList');
-  if(!results.length){list.innerHTML=`<div class="empty-state"><div class="empty-icon">🔬</div><div class="empty-title">No results match</div></div>`;return;}
-  list.innerHTML=results.map((r,idx)=>buildCard(r,idx)).join('');
+function renderList(filter) {
+  const sortMode = document.getElementById('sortSelect').value;
+  let results = [...allResults];
+  if (filter === 'same') results = results.filter(r => r.result?.comparison?.is_same_compound);
+  else if (filter === 'different') results = results.filter(r => !r.result?.comparison?.is_same_compound);
+  else if (filter === 'high') results = results.filter(r => (r.result?.comparison?.similarity_score || 0) >= 70);
+  if (sortMode === 'similarity_desc') results.sort((a,b) => (b.result?.comparison?.similarity_score||0)-(a.result?.comparison?.similarity_score||0));
+  else if (sortMode === 'similarity_asc') results.sort((a,b) => (a.result?.comparison?.similarity_score||0)-(b.result?.comparison?.similarity_score||0));
+
+  const list = document.getElementById('resultsList');
+  if (results.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🔬</div><div class="empty-title">No results match this filter</div></div>`;
+    return;
+  }
+  list.innerHTML = results.map((r, idx) => buildCard(r, idx)).join('');
 }
 
-function buildCard(r,idx){
-  if(r.status==='error') return `<div class="result-card"><div class="result-card-header" style="cursor:default"><div class="pair-names"><span class="cname">${r.image1_name}</span><span class="vs-divider">vs</span><span class="cname">${r.image2_name}</span></div><span style="font-size:12px;color:var(--red)">Error: ${r.error}</span></div></div>`;
-  const c=r.result?.comparison||{};
-  const i1=r.result?.image1||{};
-  const i2=r.result?.image2||{};
-  const score=c.similarity_score||0;
-  const sc=score>=70?'score-high':score>=40?'score-mid':'score-low';
-  const uid=`card_${idx}`;
+function buildCard(r, idx) {
+  if (r.status === 'error') return `<div class="result-card"><div class="result-card-header" style="cursor:default"><div class="pair-names"><span class="cname">${r.image1_name}</span><span class="vs-divider">vs</span><span class="cname">${r.image2_name}</span></div><span style="font-size:13px;color:var(--red)">Error: ${r.error}</span></div></div>`;
+
+  const c = r.result?.comparison || {};
+  const i1 = r.result?.image1 || {};
+  const i2 = r.result?.image2 || {};
+  const score = c.similarity_score || 0;
+  const sc = score >= 70 ? 'score-high' : score >= 40 ? 'score-mid' : 'score-low';
+  const uid = `card_${idx}`;
+
   return `<div class="result-card" id="${uid}">
     <div class="result-card-header" onclick="toggleCard('${uid}')">
       <div class="pair-names">
-        <span class="cname" title="${i1.compound_name||r.image1_name}">${i1.compound_name||r.image1_name}</span>
+        <span class="cname">${i1.compound_name || r.image1_name}</span>
         <span class="vs-divider">vs</span>
-        <span class="cname" title="${i2.compound_name||r.image2_name}">${i2.compound_name||r.image2_name}</span>
+        <span class="cname">${i2.compound_name || r.image2_name}</span>
       </div>
       <span class="score-pill ${sc}">${score}%</span>
-      <span class="badge-same ${c.is_same_compound?'badge-yes':'badge-no'}">${c.is_same_compound?'Same':'Diff'}</span>
+      <span class="badge-same ${c.is_same_compound?'badge-yes':'badge-no'}">${c.is_same_compound?'Same':'Different'}</span>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
-    <div class="result-card-body">${buildDetailTabs(r,uid)}</div>
+    <div class="result-card-body">${buildDetailTabs(r, uid)}</div>
   </div>`;
 }
 
-function buildDetailTabs(r,uid){
-  const i1=r.result?.image1||{};
-  const i2=r.result?.image2||{};
-  const c=r.result?.comparison||{};
+function buildDetailTabs(r, uid) {
+  const i1 = r.result?.image1 || {};
+  const i2 = r.result?.image2 || {};
+  const c = r.result?.comparison || {};
+
   return `
   <div class="detail-tabs">
     <button class="dtab active" onclick="switchTab('${uid}','compounds',this)">Compounds</button>
+    <button class="dtab" onclick="switchTab('${uid}','chart',this)">Chart</button>
     <button class="dtab" onclick="switchTab('${uid}','peaks',this)">Peaks</button>
     <button class="dtab" onclick="switchTab('${uid}','comparison',this)">Comparison</button>
-    <button class="dtab" onclick="switchTab('${uid}','curve',this)">Curve</button>
+    <button class="dtab" onclick="switchTab('${uid}','curve',this)">Curve Analysis</button>
   </div>
+
   <div class="detail-pane active" id="${uid}_compounds">
-    <div class="col2">${buildCompBlock(i1,'Spectrum 1')}${buildCompBlock(i2,'Spectrum 2')}</div>
+    <div class="col2">
+      ${buildCompoundBlock(i1, 'Spectrum 1')}
+      ${buildCompoundBlock(i2, 'Spectrum 2')}
+    </div>
   </div>
+
+  <div class="detail-pane" id="${uid}_chart">
+    <div style="margin-bottom:12px">
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">📊 Spectral Overlay — Both Curves in One Chart</div>
+      <div style="font-size:13px;color:var(--ink3)">Generated from AI-extracted peak data. Shows approximate curve shapes based on identified peaks.</div>
+    </div>
+    <div style="position:relative;height:300px;width:100%">
+      <canvas id="${uid}_canvas"></canvas>
+    </div>
+    <div id="${uid}_legend" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px"></div>
+    <script>
+      (function(){
+        setTimeout(function(){
+          var i1peaks = ${JSON.stringify(i1.major_peaks || [])};
+          var i2peaks = ${JSON.stringify(i2.major_peaks || [])};
+          var name1 = ${JSON.stringify((i1.compound_name || 'Spectrum 1') + (i1.chemical_formula ? ' ('+i1.chemical_formula+')' : ''))};
+          var name2 = ${JSON.stringify((i2.compound_name || 'Spectrum 2') + (i2.chemical_formula ? ' ('+i2.chemical_formula+')' : ''))};
+          var xPts = [];
+          for(var w=4000;w>=500;w-=50) xPts.push(w);
+
+          function makeCurve(peaks){
+            return xPts.map(function(wn){
+              var t = 90;
+              peaks.forEach(function(p){
+                if(p.wavenumber && p.transmittance !== undefined){
+                  var d = Math.abs(wn - p.wavenumber);
+                  if(d < 150){
+                    var dip = (90 - p.transmittance) * Math.exp(-(d*d)/(2*120*120/4));
+                    t -= dip;
+                  }
+                }
+              });
+              return Math.max(0, Math.min(100, t));
+            });
+          }
+
+          var ctx = document.getElementById('${uid}_canvas').getContext('2d');
+          new Chart(ctx, {
+            type:'line',
+            data:{
+              labels: xPts,
+              datasets:[
+                {label:name1, data:makeCurve(i1peaks), borderColor:'#1a6b5e', backgroundColor:'rgba(26,107,94,0.08)', borderWidth:2.5, pointRadius:0, tension:0.4, fill:true},
+                {label:name2, data:makeCurve(i2peaks), borderColor:'#c0392b', backgroundColor:'rgba(192,57,43,0.06)', borderWidth:2.5, pointRadius:0, tension:0.4, fill:true}
+              ]
+            },
+            options:{
+              responsive:true, maintainAspectRatio:false,
+              interaction:{mode:'index',intersect:false},
+              plugins:{
+                legend:{display:false},
+                tooltip:{callbacks:{title:function(c){return c[0].label+' cm⁻¹'},label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(1)+'% T'}}}
+              },
+              scales:{
+                x:{title:{display:true,text:'Wavenumber (cm⁻¹)',color:'#6b6760',font:{size:11}},ticks:{maxTicksLimit:10,color:'#6b6760',callback:function(v){return xPts[v]?xPts[v]+'':''}},grid:{color:'#e8e5df'}},
+                y:{title:{display:true,text:'Transmittance (%)',color:'#6b6760',font:{size:11}},min:0,max:100,ticks:{color:'#6b6760'},grid:{color:'#e8e5df'}}
+              }
+            }
+          });
+
+          document.getElementById('${uid}_legend').innerHTML =
+            '<div class="legend-item"><div class="legend-dot" style="background:#1a6b5e"></div><span>'+name1+'</span></div>'+
+            '<div class="legend-item"><div class="legend-dot" style="background:#c0392b"></div><span>'+name2+'</span></div>';
+        }, 100);
+      })();
+    <\/script>
+  </div>
+
   <div class="detail-pane" id="${uid}_peaks">
     <div class="col2">
-      <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:8px">${i1.compound_name||'Spectrum 1'}</div>
-      <div class="table-wrap"><table><thead><tr><th>Wavenumber</th><th>Trans%</th><th>Assignment</th></tr></thead><tbody>${(i1.major_peaks||[]).map(p=>`<tr><td class="wn">${p.wavenumber} cm⁻¹</td><td class="tr">${p.transmittance}%</td><td class="asgn">${p.assignment}</td></tr>`).join('')||'<tr><td colspan="3" style="color:var(--mid)">No peaks</td></tr>'}</tbody></table></div></div>
-      <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:8px">${i2.compound_name||'Spectrum 2'}</div>
-      <div class="table-wrap"><table><thead><tr><th>Wavenumber</th><th>Trans%</th><th>Assignment</th></tr></thead><tbody>${(i2.major_peaks||[]).map(p=>`<tr><td class="wn">${p.wavenumber} cm⁻¹</td><td class="tr">${p.transmittance}%</td><td class="asgn">${p.assignment}</td></tr>`).join('')||'<tr><td colspan="3" style="color:var(--mid)">No peaks</td></tr>'}</tbody></table></div></div>
+      <div>
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:10px">Spectrum 1 — ${i1.compound_name||'?'} ${i1.chemical_formula?'('+i1.chemical_formula+')':''}</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Wavenumber</th><th>Trans %</th><th>Assignment</th></tr></thead>
+          <tbody>${(i1.major_peaks||[]).map(p=>`<tr><td class="wn">${p.wavenumber} cm⁻¹</td><td class="tr">${p.transmittance}%</td><td class="asgn">${p.assignment}</td></tr>`).join('')||'<tr><td colspan="3" style="color:var(--mid)">No peaks</td></tr>'}</tbody>
+        </table></div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:10px">Spectrum 2 — ${i2.compound_name||'?'} ${i2.chemical_formula?'('+i2.chemical_formula+')':''}</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Wavenumber</th><th>Trans %</th><th>Assignment</th></tr></thead>
+          <tbody>${(i2.major_peaks||[]).map(p=>`<tr><td class="wn">${p.wavenumber} cm⁻¹</td><td class="tr">${p.transmittance}%</td><td class="asgn">${p.assignment}</td></tr>`).join('')||'<tr><td colspan="3" style="color:var(--mid)">No peaks</td></tr>'}</tbody>
+        </table></div>
+      </div>
     </div>
-    <div style="margin-top:16px">
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--green);margin-bottom:7px">Matching Peaks</div>
-      <div class="table-wrap"><table><thead><tr><th>Spectrum 1 (cm⁻¹)</th><th>Spectrum 2 (cm⁻¹)</th><th>Δ Diff</th><th>Note</th></tr></thead><tbody>${(c.matching_peaks||[]).map(p=>`<tr class="match-tr"><td class="wn">${p.wavenumber_img1}</td><td class="wn">${p.wavenumber_img2}</td><td class="tr">${p.difference}</td><td class="asgn">${p.note}</td></tr>`).join('')||'<tr><td colspan="4" style="color:var(--mid)">None</td></tr>'}</tbody></table></div>
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--red);margin:12px 0 7px">Unique Peaks</div>
-      <div class="table-wrap"><table><thead><tr><th>Wavenumber</th><th>Present In</th><th>Note</th></tr></thead><tbody>${(c.non_matching_peaks||[]).map(p=>`<tr class="nomatch-tr"><td class="wn">${p.wavenumber}</td><td style="color:var(--amber);font-family:var(--mono);font-size:12px">${p.present_in}</td><td class="asgn">${p.note}</td></tr>`).join('')||'<tr><td colspan="3" style="color:var(--mid)">None</td></tr>'}</tbody></table></div>
+    <div style="margin-top:20px">
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--green);margin-bottom:8px">✅ Matching Peaks</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Sp.1 (cm⁻¹)</th><th>Sp.2 (cm⁻¹)</th><th>Δ</th><th>Note</th></tr></thead>
+        <tbody>${(c.matching_peaks||[]).map(p=>`<tr class="match-tr"><td class="wn">${p.wavenumber_img1}</td><td class="wn">${p.wavenumber_img2}</td><td class="tr">${p.difference}</td><td class="asgn">${p.note}</td></tr>`).join('')||'<tr><td colspan="4" style="color:var(--mid)">No matching peaks</td></tr>'}</tbody>
+      </table></div>
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--red);margin:14px 0 8px">❌ Non-Matching Peaks</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Wavenumber</th><th>Present In</th><th>Note</th></tr></thead>
+        <tbody>${(c.non_matching_peaks||[]).map(p=>`<tr class="nomatch-tr"><td class="wn">${p.wavenumber}</td><td style="color:var(--amber);font-family:var(--mono);font-size:12px">${p.present_in}</td><td class="asgn">${p.note}</td></tr>`).join('')||'<tr><td colspan="3" style="color:var(--mid)">None</td></tr>'}</tbody>
+      </table></div>
     </div>
   </div>
+
   <div class="detail-pane" id="${uid}_comparison">
     <div class="sim-bar-wrap">
       <div class="sim-bar-top"><span style="font-size:13px;color:var(--ink3)">Similarity Score</span><span class="pct">${c.similarity_score||0}%</span></div>
       <div class="sim-bar"><div class="sim-fill" style="width:${c.similarity_score||0}%"></div></div>
     </div>
     <div class="comp-grid">
-      <div class="comp-box"><div class="box-label">100% Accuracy</div><p style="font-weight:600;color:${c.accuracy_100_percent?'var(--green)':'var(--red)'};margin-bottom:5px">${c.accuracy_100_percent?'✓ Perfect Match':'✗ Not Identical'}</p><p style="font-size:13px">${c.accuracy_explanation||''}</p></div>
-      <div class="comp-box"><div class="box-label">Functional Groups</div><p>${c.functional_groups_comparison||'—'}</p></div>
+      <div class="comp-box">
+        <div class="box-label">100% Accuracy</div>
+        <p style="font-weight:600;color:${c.accuracy_100_percent?'var(--green)':'var(--red)'};margin-bottom:6px">${c.accuracy_100_percent?'✓ Perfect Match':'✗ Not Identical'}</p>
+        <p>${c.accuracy_explanation||''}</p>
+      </div>
+      <div class="comp-box">
+        <div class="box-label">Functional Groups</div>
+        <p>${c.functional_groups_comparison||'—'}</p>
+      </div>
     </div>
     <div class="sim-lists">
-      <div><div class="sim-list-title pos">Similarities</div><ul class="sim-list pos">${(c.similarities||[]).map(s=>`<li>${s}</li>`).join('')||'<li>None</li>'}</ul></div>
-      <div><div class="sim-list-title neg">Differences</div><ul class="sim-list neg">${(c.differences||[]).map(d=>`<li>${d}</li>`).join('')||'<li>None</li>'}</ul></div>
+      <div><div class="sim-list-title pos">Similarities</div><ul class="sim-list pos">${(c.similarities||[]).map(s=>`<li>${s}</li>`).join('')||'<li>None found</li>'}</ul></div>
+      <div><div class="sim-list-title neg">Differences</div><ul class="sim-list neg">${(c.differences||[]).map(d=>`<li>${d}</li>`).join('')||'<li>None found</li>'}</ul></div>
     </div>
     <div class="conclusion-box"><div class="clabel">Conclusion</div>${c.conclusion||'—'}</div>
   </div>
+
   <div class="detail-pane" id="${uid}_curve">
-    <div style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;font-size:13px;color:var(--ink2);line-height:1.7">
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:7px">Trough & Crest Comparison</div>
+    <div style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px;font-size:13px;color:var(--ink2);line-height:1.7">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:8px">Trough & Crest Comparison</div>
       ${c.trough_crest_comparison||'—'}
     </div>
-    <div class="comp-grid" style="margin-bottom:14px">
-      <div class="comp-box"><div class="box-label">Spectrum 1 Pattern</div><p>${c.curve_up_down_analysis?.image1_pattern||'—'}</p></div>
-      <div class="comp-box"><div class="box-label">Spectrum 2 Pattern</div><p>${c.curve_up_down_analysis?.image2_pattern||'—'}</p></div>
+    <div class="comp-grid" style="margin-bottom:16px">
+      <div class="comp-box"><div class="box-label">Spectrum 1 Up/Down Pattern</div><p>${c.curve_up_down_analysis?.image1_pattern||'—'}</p></div>
+      <div class="comp-box"><div class="box-label">Spectrum 2 Up/Down Pattern</div><p>${c.curve_up_down_analysis?.image2_pattern||'—'}</p></div>
     </div>
-    <div style="background:var(--teal-light);border:1px solid rgba(26,107,94,.2);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:14px">
-      <strong style="color:var(--teal)">Pattern Similarity: </strong>${c.curve_up_down_analysis?.how_similar||'—'}
+    <div style="background:var(--teal-l);border:1px solid rgba(26,107,94,.2);border-radius:8px;padding:14px 16px;font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:16px">
+      <strong style="color:var(--teal)">How Similar: </strong>${c.curve_up_down_analysis?.how_similar||'—'}
     </div>
     <div class="col2">
       ${buildRegions(i1,'Spectrum 1 Regions')}
@@ -659,30 +872,29 @@ function buildDetailTabs(r,uid){
   </div>`;
 }
 
-function buildCompBlock(img,label){
-  const confColor=img.identification_confidence==='High'?'var(--green)':img.identification_confidence==='Medium'?'var(--amber)':'var(--red)';
-  const fgs=Array.isArray(img.functional_groups)?img.functional_groups:[];
+function buildCompoundBlock(img, label) {
+  const confColor = img.identification_confidence === 'High' ? 'var(--green)' : img.identification_confidence === 'Medium' ? 'var(--amber)' : 'var(--red)';
   return `<div class="info-block">
     <div class="label">${label}</div>
-    <div class="compound-big">${img.compound_name||'Unknown'}</div>
+    <div class="compound-big">${img.compound_name||'Unknown Compound'}</div>
     <div class="formula-big">${img.chemical_formula||'—'}</div>
     <div class="meta-chips">
       ${img.identification_confidence?`<span class="chip" style="color:${confColor};border-color:${confColor}">Confidence: ${img.identification_confidence}</span>`:''}
       ${img.molecular_weight?`<span class="chip">MW: ${img.molecular_weight}</span>`:''}
       ${img.sample_type?`<span class="chip">${img.sample_type}</span>`:''}
     </div>
-    ${fgs.length?`<div class="meta-chips">${fgs.map(f=>`<span class="chip" style="background:var(--teal-light);color:var(--teal)">${f}</span>`).join('')}</div>`:''}
-    ${img.identification_reasoning?`<div class="reasoning-box"><div class="reasoning-label">🔬 How AI Identified This Compound</div><div class="reasoning-text">${img.identification_reasoning}</div></div>`:''}
-    ${img.possible_alternatives?`<div class="alt-box"><div class="alt-label">Possible Alternatives</div><div class="alt-text">${img.possible_alternatives}</div></div>`:''}
-    ${img.smiles?`<div style="font-size:11px;font-family:var(--mono);color:var(--ink3);background:var(--off);padding:6px 8px;border-radius:5px;margin-bottom:8px;word-break:break-all">SMILES: ${img.smiles}</div>`:''}
+    ${img.identification_reasoning?`<div style="background:var(--white);border:1px solid var(--border);border-radius:7px;padding:12px;margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--teal);margin-bottom:6px">🔬 How AI Identified This</div><div style="font-size:13px;color:var(--ink2);line-height:1.6">${img.identification_reasoning}</div></div>`:''}
+    ${img.possible_alternatives?`<div style="background:var(--amber-l);border:1px solid rgba(184,92,26,.2);border-radius:7px;padding:10px;margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--amber);margin-bottom:4px">Possible Alternatives</div><div style="font-size:13px;color:var(--ink2)">${img.possible_alternatives}</div></div>`:''}
+    ${img.functional_groups?`<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:6px">Functional Groups</div><div class="meta-chips">${(Array.isArray(img.functional_groups)?img.functional_groups:[img.functional_groups]).map(g=>`<span class="chip" style="color:var(--teal);border-color:rgba(26,107,94,.3)">${g}</span>`).join('')}</div></div>`:''}
     <div class="curve-text">${img.curve_description||''}</div>
   </div>`;
 }
 
-function buildRegions(img,title){
-  const r=img.key_regions||{};
-  return `<div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:8px">${title}</div>
-    <div class="regions-wrap">
+function buildRegions(img, title) {
+  const r = img.key_regions || {};
+  return `<div>
+    <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:8px">${title}</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
       <div class="region-card"><div class="region-label">4000–2500 cm⁻¹</div><div class="region-text">${r['4000_2500']||'—'}</div></div>
       <div class="region-card"><div class="region-label">2500–1500 cm⁻¹</div><div class="region-text">${r['2500_1500']||'—'}</div></div>
       <div class="region-card"><div class="region-label">1500–500 cm⁻¹ (Fingerprint)</div><div class="region-text">${r['1500_500']||'—'}</div></div>
@@ -690,70 +902,36 @@ function buildRegions(img,title){
   </div>`;
 }
 
-function toggleCard(uid){document.getElementById(uid).classList.toggle('open')}
-function switchTab(uid,tab,btn){
-  const card=document.getElementById(uid);
-  card.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
-  card.querySelectorAll('.detail-pane').forEach(p=>p.classList.remove('active'));
+function toggleCard(uid) { document.getElementById(uid).classList.toggle('open'); }
+
+function switchTab(uid, tab, btn) {
+  const card = document.getElementById(uid);
+  card.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  card.querySelectorAll('.detail-pane').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById(`${uid}_${tab}`).classList.add('active');
 }
 
-// LIBRARY
-async function loadLibrary(){
-  const content=document.getElementById('libraryContent');
-  content.innerHTML=`<div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Loading...</div></div>`;
-  try{
-    const res=await fetch('/library');
-    const rows=await res.json();
-    const stats=document.getElementById('libStats');
-    if(!rows.length){
-      stats.innerHTML='';
-      content.innerHTML=`<div class="empty-state"><div class="empty-icon">🧪</div><div class="empty-title">Library is empty</div><div class="empty-sub">Run some analyses first — every compound identified gets saved here automatically</div></div>`;
-      return;
-    }
-    const unique=new Set(rows.map(r=>r.compound_name)).size;
-    stats.innerHTML=`<span class="lib-stat"><strong>${rows.length}</strong> entries</span><span class="lib-stat"><strong>${unique}</strong> unique compounds</span>`;
-    content.innerHTML=`<div class="lib-grid">${rows.map(r=>buildLibCard(r)).join('')}</div>`;
-  }catch(e){content.innerHTML=`<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Error loading library</div></div>`;}
-}
-
-function buildLibCard(r){
-  const fgs=r.functional_groups?r.functional_groups.split(',').filter(f=>f.trim()):[];
-  const confClass=r.identification_confidence==='High'?'conf-high':r.identification_confidence==='Medium'?'conf-med':'conf-low';
-  return `<div class="lib-card">
-    <div class="lib-compound">${r.compound_name||'Unknown'}</div>
-    <div class="lib-formula">${r.molecular_formula||'—'}</div>
-    ${fgs.length?`<div class="lib-chips">${fgs.slice(0,4).map(f=>`<span class="lib-chip">${f.trim()}</span>`).join('')}</div>`:''}
-    <div class="lib-row"><span>Molecular Weight</span><strong>${r.molecular_weight||'—'}</strong></div>
-    <div class="lib-row"><span>SMILES</span><strong style="font-family:var(--mono);font-size:11px;word-break:break-all">${r.smiles||'—'}</strong></div>
-    <div class="lib-row"><span>Sample Type</span><strong>${r.sample_type||'—'}</strong></div>
-    <div class="lib-row"><span>Confidence</span><strong class="${confClass}">${r.identification_confidence||'—'}</strong></div>
-    <div class="lib-row"><span>Source</span><strong>${r.reference_source||'SpectraLens'}</strong></div>
-    <div class="lib-row"><span>Date Added</span><strong style="font-family:var(--mono);font-size:11px">${r.date_added||'—'}</strong></div>
-    ${r.identification_reasoning?`<div style="margin-top:10px;font-size:12px;color:var(--ink3);line-height:1.5;border-top:1px solid var(--stone);padding-top:8px">${r.identification_reasoning.substring(0,200)}${r.identification_reasoning.length>200?'...':''}</div>`:''}
-  </div>`;
-}
-
-// HISTORY
-async function loadHistory(){
-  const content=document.getElementById('historyContent');
-  content.innerHTML=`<div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Loading...</div></div>`;
-  try{
-    const res=await fetch('/history');
-    const rows=await res.json();
-    if(!rows.length){content.innerHTML=`<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-title">No history yet</div><div class="empty-sub">Run your first analysis</div></div>`;return;}
-    const tbody=[...rows].reverse().map(r=>{
-      const s=parseInt(r.similarity_score||0);
-      const sc=s>=70?'score-h':s>=40?'score-m':'score-l';
-      return `<tr><td style="color:var(--ink3);font-family:var(--mono);font-size:11px">${r.timestamp}</td><td><strong>${r.compound1}</strong><br><span style="font-family:var(--mono);font-size:11px;color:var(--teal)">${r.formula1}</span></td><td><strong>${r.compound2}</strong><br><span style="font-family:var(--mono);font-size:11px;color:var(--teal)">${r.formula2}</span></td><td><span class="score-cell ${sc}">${s}%</span></td><td><span class="badge-same ${r.is_same_compound==='True'?'badge-yes':'badge-no'}">${r.is_same_compound==='True'?'Same':'Diff'}</span></td><td><span class="badge-same ${r.accuracy_100_percent==='True'?'badge-yes':'badge-no'}">${r.accuracy_100_percent==='True'?'100%':'No'}</span></td></tr>`;
+// ── HISTORY
+async function loadHistory() {
+  const content = document.getElementById('historyContent');
+  content.innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Loading...</div></div>`;
+  try {
+    const res = await fetch('/history');
+    const rows = await res.json();
+    if (!rows.length) { content.innerHTML = `<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-title">No history yet</div><div class="empty-sub">Run your first analysis</div></div>`; return; }
+    const tbody = [...rows].reverse().map(r => {
+      const s = parseInt(r.similarity_score||0);
+      const sc = s>=70?'score-h':s>=40?'score-m':'score-l';
+      return `<tr><td style="color:var(--ink3);font-family:var(--mono);font-size:12px">${r.timestamp}</td><td><strong>${r.compound1}</strong><br><span style="font-family:var(--mono);font-size:12px;color:var(--teal)">${r.formula1}</span></td><td><strong>${r.compound2}</strong><br><span style="font-family:var(--mono);font-size:12px;color:var(--teal)">${r.formula2}</span></td><td><span class="score-cell ${sc}">${s}%</span></td><td><span class="badge-same ${r.is_same_compound==='True'?'badge-yes':'badge-no'}">${r.is_same_compound==='True'?'Same':'Different'}</span></td></tr>`;
     }).join('');
-    content.innerHTML=`<div class="htable-wrap"><table class="htable"><thead><tr><th>Time</th><th>Compound 1</th><th>Compound 2</th><th>Score</th><th>Same?</th><th>100%?</th></tr></thead><tbody>${tbody}</tbody></table></div><p style="font-size:12px;color:var(--ink3);margin-top:8px;font-family:var(--mono)">${rows.length} total records</p>`;
-  }catch(e){content.innerHTML=`<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load</div></div>`;}
+    content.innerHTML = `<div class="history-table-wrap"><table class="htable"><thead><tr><th>Time</th><th>Compound 1</th><th>Compound 2</th><th>Score</th><th>Same?</th></tr></thead><tbody>${tbody}</tbody></table></div><p style="font-size:12px;color:var(--ink3);margin-top:10px;font-family:var(--mono)">${rows.length} total records</p>`;
+  } catch(e) { content.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load history</div></div>`; }
 }
 
-function showError(msg){const b=document.getElementById('errorBanner');b.textContent=msg;b.style.display='block';}
-function hideError(){document.getElementById('errorBanner').style.display='none';}
+// ── UTILS
+function showError(msg) { const b=document.getElementById('errorBanner'); b.textContent=msg; b.style.display='block'; }
+function hideError() { document.getElementById('errorBanner').style.display='none'; }
 </script>
 </body>
 </html>
