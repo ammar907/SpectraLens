@@ -260,6 +260,7 @@ tr.nomatch-tr{background:rgba(192,57,43,.03)}
     <div class="nav-links">
       <button class="nav-btn active" onclick="showPage('analyze',this)">Analyze</button>
       <button class="nav-btn" onclick="showPage('history',this);loadHistory()">History</button>
+      <button class="nav-btn" onclick="showPage('library',this);loadLibrary()">Library</button>
     </div>
   </div>
 </nav>
@@ -362,6 +363,7 @@ tr.nomatch-tr{background:rgba(192,57,43,.03)}
             <button class="filter-tab" onclick="filterResults('high',this)">High Match</button>
           </div>
           <a href="/export-csv" class="btn btn-outline btn-sm">⬇ Export CSV</a>
+          <a href="/export-library" class="btn btn-outline btn-sm" style="border-color:var(--teal);color:var(--teal)">⬇ Export Library</a>
         </div>
         <div class="summary-grid" id="summaryGrid"></div>
 
@@ -379,7 +381,94 @@ tr.nomatch-tr{background:rgba(192,57,43,.03)}
   </div>
 </div>
 
-<!-- HISTORY PAGE -->
+<!-- LIBRARY PAGE -->
+<div class="page" id="page-library">
+  <div class="main">
+    <div class="container">
+      <div class="history-toolbar">
+        <h2 class="history-title">Compound Library</h2>
+        <div style="display:flex;gap:8px">
+          <a href="/export-library" class="btn btn-primary btn-sm">⬇ Download Library CSV</a>
+          <a href="/export-csv" class="btn btn-outline btn-sm">⬇ Analysis History CSV</a>
+        </div>
+      </div>
+      <p style="font-size:14px;color:var(--ink3);margin-bottom:24px">Every compound identified by AI is saved here automatically. Use this as your personal IR spectra database.</p>
+      <div id="libraryContent">
+        <div class="empty-state"><div class="empty-icon">🧪</div><div class="empty-title">Library is empty</div><div class="empty-sub">Run analyses to build your compound library</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function loadLibrary() {
+  const content = document.getElementById('libraryContent');
+  content.innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Loading...</div></div>`;
+  try {
+    const res = await fetch('/library');
+    const rows = await res.json();
+    if (!rows.length) {
+      content.innerHTML = `<div class="empty-state"><div class="empty-icon">🧪</div><div class="empty-title">Library is empty</div><div class="empty-sub">Run some analyses first — every identified compound is saved here automatically</div></div>`;
+      return;
+    }
+
+    // Deduplicate by compound name
+    const seen = new Set();
+    const unique = rows.filter(r => {
+      if (seen.has(r.compound_name)) return false;
+      seen.add(r.compound_name);
+      return true;
+    });
+
+    const cards = unique.map(r => {
+      const confColor = r.identification_confidence === 'High' ? 'var(--green)' : r.identification_confidence === 'Medium' ? 'var(--amber)' : 'var(--red)';
+      const fg = r.functional_groups ? r.functional_groups.split(',').map(g => `<span class="chip" style="color:var(--teal);border-color:rgba(26,107,94,.3)">${g.trim()}</span>`).join('') : '';
+      return `<div class="panel" style="margin-bottom:16px">
+        <div class="panel-body">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+            <div style="flex:1">
+              <div style="font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:4px">${r.compound_name||'Unknown'}</div>
+              <div style="font-family:var(--mono);font-size:17px;color:var(--teal);margin-bottom:12px">${r.molecular_formula||'—'}</div>
+              <div class="meta-chips">
+                ${r.identification_confidence?`<span class="chip" style="color:${confColor};border-color:${confColor}">Confidence: ${r.identification_confidence}</span>`:''}
+                ${r.molecular_weight?`<span class="chip">MW: ${r.molecular_weight}</span>`:''}
+                ${r.smiles?`<span class="chip" title="${r.smiles}">SMILES ✓</span>`:''}
+                ${r.sample_type?`<span class="chip">${r.sample_type}</span>`:''}
+              </div>
+              ${fg?`<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:6px">Functional Groups</div><div class="meta-chips">${fg}</div></div>`:''}
+              ${r.identification_reasoning?`<div style="font-size:13px;color:var(--ink3);line-height:1.6;margin-bottom:8px"><strong style="color:var(--ink2)">AI Reasoning:</strong> ${r.identification_reasoning}</div>`:''}
+              ${r.possible_alternatives?`<div style="font-size:13px;color:var(--amber)"><strong>Alternatives:</strong> ${r.possible_alternatives}</div>`:''}
+            </div>
+            <div style="flex-shrink:0;text-align:right">
+              <div style="font-size:11px;color:var(--ink3);font-family:var(--mono)">${r.date_added||''}</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:4px">${r.image_filename||''}</div>
+            </div>
+          </div>
+          ${(r.peak_1_wavenumber||r.peak_2_wavenumber||r.peak_3_wavenumber)?`
+          <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:10px">Key Peaks</div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              ${r.peak_1_wavenumber?`<div class="region-card"><div class="region-label">${r.peak_1_wavenumber} cm⁻¹</div><div class="region-text">${r.peak_1_assignment||''}</div></div>`:''}
+              ${r.peak_2_wavenumber?`<div class="region-card"><div class="region-label">${r.peak_2_wavenumber} cm⁻¹</div><div class="region-text">${r.peak_2_assignment||''}</div></div>`:''}
+              ${r.peak_3_wavenumber?`<div class="region-card"><div class="region-label">${r.peak_3_wavenumber} cm⁻¹</div><div class="region-text">${r.peak_3_assignment||''}</div></div>`:''}
+            </div>
+          </div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+
+    content.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div style="font-size:14px;color:var(--ink3);font-family:var(--mono)">${unique.length} unique compound${unique.length!==1?'s':''} identified (${rows.length} total entries)</div>
+      </div>
+      ${cards}`;
+  } catch(e) {
+    content.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load library</div></div>`;
+  }
+}
+</script>
+
+
 <div class="page" id="page-history">
   <div class="main">
     <div class="container">
