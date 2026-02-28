@@ -649,18 +649,21 @@ function renderOverlayChart() {
   const done = allResults.filter(r => r.status === 'done');
   if (done.length === 0) return;
 
-  // Collect all unique compounds with their peaks
+  // Collect ALL compounds — use image filename as unique key so nothing is skipped
   const compoundMap = {};
   done.forEach(r => {
     const i1 = r.result?.image1;
     const i2 = r.result?.image2;
+    // Always use filename as key to avoid deduplication killing second compound
     if (i1 && i1.major_peaks && i1.major_peaks.length > 0) {
-      const key = i1.compound_name || r.image1_name;
-      if (!compoundMap[key]) compoundMap[key] = { peaks: i1.major_peaks, name: key, formula: i1.chemical_formula || '' };
+      const key = r.image1_name; // unique per image file
+      const label = (i1.compound_name && i1.compound_name !== 'Unknown compound') ? i1.compound_name : r.image1_name.replace(/\.[^.]+$/, '');
+      compoundMap[key] = { peaks: i1.major_peaks, name: label, formula: i1.chemical_formula || '' };
     }
     if (i2 && i2.major_peaks && i2.major_peaks.length > 0) {
-      const key = i2.compound_name || r.image2_name;
-      if (!compoundMap[key]) compoundMap[key] = { peaks: i2.major_peaks, name: key, formula: i2.chemical_formula || '' };
+      const key = r.image2_name; // unique per image file
+      const label = (i2.compound_name && i2.compound_name !== 'Unknown compound') ? i2.compound_name : r.image2_name.replace(/\.[^.]+$/, '');
+      compoundMap[key] = { peaks: i2.major_peaks, name: label, formula: i2.chemical_formula || '' };
     }
   });
 
@@ -824,7 +827,7 @@ function buildDetailTabs(r, uid) {
   <div class="detail-pane" id="${uid}_chart">
     <div style="margin-bottom:12px">
       <div style="font-size:14px;font-weight:600;margin-bottom:4px">📊 Spectral Overlay — Both Curves in One Chart</div>
-      <div style="font-size:13px;color:var(--ink3)">Generated from AI-extracted peak data. Shows approximate curve shapes based on identified peaks.</div>
+      <div style="font-size:13px;color:var(--ink3)">Both spectra plotted together. Teal = Spectrum 1, Red = Spectrum 2.</div>
     </div>
     <div style="position:relative;height:300px;width:100%">
       <canvas id="${uid}_canvas"></canvas>
@@ -835,19 +838,38 @@ function buildDetailTabs(r, uid) {
         setTimeout(function(){
           var i1peaks = ${JSON.stringify(i1.major_peaks || [])};
           var i2peaks = ${JSON.stringify(i2.major_peaks || [])};
-          var name1 = ${JSON.stringify((i1.compound_name || 'Spectrum 1') + (i1.chemical_formula ? ' ('+i1.chemical_formula+')' : ''))};
-          var name2 = ${JSON.stringify((i2.compound_name || 'Spectrum 2') + (i2.chemical_formula ? ' ('+i2.chemical_formula+')' : ''))};
+          var rawName1 = ${JSON.stringify(i1.compound_name || '')};
+          var rawName2 = ${JSON.stringify(i2.compound_name || '')};
+          var file1 = ${JSON.stringify(r.image1_name || 'Spectrum 1')};
+          var file2 = ${JSON.stringify(r.image2_name || 'Spectrum 2')};
+          var formula1 = ${JSON.stringify(i1.chemical_formula || '')};
+          var formula2 = ${JSON.stringify(i2.chemical_formula || '')};
+
+          // Use compound name if identified, otherwise use filename
+          function cleanName(raw, file) {
+            if (!raw || raw === 'Unknown compound' || raw === 'Unknown') return file.replace(/\.[^.]+$/, '');
+            return raw;
+          }
+          var name1 = cleanName(rawName1, file1) + (formula1 ? ' ('+formula1+')' : '');
+          var name2 = cleanName(rawName2, file2) + (formula2 ? ' ('+formula2+')' : '');
+
           var xPts = [];
           for(var w=4000;w>=500;w-=50) xPts.push(w);
 
           function makeCurve(peaks){
+            if(!peaks || peaks.length === 0){
+              // Flat line at 85 if no peaks available
+              return xPts.map(function(){ return 85; });
+            }
             return xPts.map(function(wn){
               var t = 90;
               peaks.forEach(function(p){
-                if(p.wavenumber && p.transmittance !== undefined){
-                  var d = Math.abs(wn - p.wavenumber);
-                  if(d < 150){
-                    var dip = (90 - p.transmittance) * Math.exp(-(d*d)/(2*120*120/4));
+                var wnum = parseFloat(p.wavenumber);
+                var trans = parseFloat(p.transmittance);
+                if(!isNaN(wnum) && !isNaN(trans)){
+                  var d = Math.abs(wn - wnum);
+                  if(d < 200){
+                    var dip = (90 - trans) * Math.exp(-(d*d)/(2*130*130/4));
                     t -= dip;
                   }
                 }
@@ -862,8 +884,8 @@ function buildDetailTabs(r, uid) {
             data:{
               labels: xPts,
               datasets:[
-                {label:name1, data:makeCurve(i1peaks), borderColor:'#1a6b5e', backgroundColor:'rgba(26,107,94,0.08)', borderWidth:2.5, pointRadius:0, tension:0.4, fill:true},
-                {label:name2, data:makeCurve(i2peaks), borderColor:'#c0392b', backgroundColor:'rgba(192,57,43,0.06)', borderWidth:2.5, pointRadius:0, tension:0.4, fill:true}
+                {label:name1, data:makeCurve(i1peaks), borderColor:'#1a6b5e', backgroundColor:'rgba(26,107,94,0.07)', borderWidth:2.5, pointRadius:0, tension:0.4, fill:true},
+                {label:name2, data:makeCurve(i2peaks), borderColor:'#c0392b', backgroundColor:'rgba(192,57,43,0.07)', borderWidth:2.5, pointRadius:0, tension:0.4, fill:true}
               ]
             },
             options:{
@@ -871,10 +893,13 @@ function buildDetailTabs(r, uid) {
               interaction:{mode:'index',intersect:false},
               plugins:{
                 legend:{display:false},
-                tooltip:{callbacks:{title:function(c){return c[0].label+' cm⁻¹'},label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(1)+'% T'}}}
+                tooltip:{callbacks:{
+                  title:function(c){return c[0].label+' cm\u207B\u00B9'},
+                  label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(1)+'% T'}
+                }}
               },
               scales:{
-                x:{title:{display:true,text:'Wavenumber (cm⁻¹)',color:'#6b6760',font:{size:11}},ticks:{maxTicksLimit:10,color:'#6b6760',callback:function(v){return xPts[v]?xPts[v]+'':''}},grid:{color:'#e8e5df'}},
+                x:{title:{display:true,text:'Wavenumber (cm\u207B\u00B9)',color:'#6b6760',font:{size:11}},ticks:{maxTicksLimit:10,color:'#6b6760',callback:function(v){return xPts[v]?xPts[v]+'':''}},grid:{color:'#e8e5df'}},
                 y:{title:{display:true,text:'Transmittance (%)',color:'#6b6760',font:{size:11}},min:0,max:100,ticks:{color:'#6b6760'},grid:{color:'#e8e5df'}}
               }
             }
@@ -883,7 +908,7 @@ function buildDetailTabs(r, uid) {
           document.getElementById('${uid}_legend').innerHTML =
             '<div class="legend-item"><div class="legend-dot" style="background:#1a6b5e"></div><span>'+name1+'</span></div>'+
             '<div class="legend-item"><div class="legend-dot" style="background:#c0392b"></div><span>'+name2+'</span></div>';
-        }, 100);
+        }, 150);
       })();
     <\/script>
   </div>
