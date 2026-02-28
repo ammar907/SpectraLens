@@ -1,11 +1,12 @@
 """
-SpectraLens - IR Spectrum Bulk Analyzer
+SpectraLens - IR Spectrum Bulk Analyzer - FINAL VERSION
 Supports 2 to 400+ image comparisons
 Uses Groq FREE API
+Includes: CSV export, Library export, Sitemap, Robots.txt
 """
 
-from flask import Flask, request, jsonify, send_from_directory, send_file
-import base64, csv, os, json, re, requests, threading, uuid
+from flask import Flask, request, jsonify, send_from_directory, make_response
+import base64, csv, os, json, re, requests, threading, uuid, io
 from datetime import datetime
 from itertools import combinations
 
@@ -13,6 +14,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
 RESULTS_CSV = "results/analysis_history.csv"
+LIBRARY_CSV = "results/compound_library.csv"
 JOBS = {}
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -51,84 +53,80 @@ HOW TO IDENTIFY THE COMPOUND FROM THE CURVE:
    - Trough at 1600-1650 = C=C stretch (alkenes) or N-H bend
    - Strong broad trough at 1000-1300 = C-O stretch (ethers, alcohols, esters)
    - Sharp peaks at 1400-1500 = C-H bending
-   - Trough at 2200-2260 = C≡N or C≡C (nitriles, alkynes)
+   - Trough at 2200-2260 = C triple bond N or C triple bond C (nitriles, alkynes)
    - Broad trough at 2500-3300 = O-H of carboxylic acid
-4. Use the fingerprint region (500-1500 cm-1) pattern to narrow down exact compound
+4. Use fingerprint region (500-1500 cm-1) pattern to narrow down exact compound
 5. Based on ALL functional groups detected, identify the most likely compound and its formula
 
-IMPORTANT: Even if no text is visible in the image, you MUST identify the compound from the curve shape. Use your chemistry knowledge to give the best scientific identification.
+IMPORTANT: Even if no text is visible, you MUST identify the compound from the curve shape using your chemistry knowledge.
+
+Also extract or estimate these library fields for each compound:
+- molecular_weight: estimate in g/mol
+- smiles: SMILES notation if you can determine it
+- functional_groups: list all functional groups present
+- reference_source: "IR Spectroscopy Analysis" or database name if visible
 
 Return ONLY valid JSON, no markdown, no extra text:
 
 {
   "image1": {
-    "compound_name": "Your best scientific identification of the compound based on curve analysis e.g. Ethanol, Acetone, Glucose, Aspirin etc",
-    "chemical_formula": "The chemical formula e.g. C2H5OH, CH3COCH3, C6H12O6 etc",
-    "identification_confidence": "High / Medium / Low",
-    "identification_reasoning": "Explain step by step how you identified the compound from the curve shape - which peaks led you to which functional groups and finally to the compound name",
-    "possible_alternatives": "Other compounds it could possibly be if not 100% sure",
-    "sample_type": "KBR DISC or LIQUID FILM or NUJOL MULL etc if visible, else Unknown",
+    "compound_name": "Scientific compound name identified from curve e.g. Ethanol, Acetone, Glucose",
+    "chemical_formula": "e.g. C2H5OH",
+    "molecular_weight": "e.g. 46.07 g/mol",
+    "smiles": "SMILES notation e.g. CCO",
+    "identification_confidence": "High or Medium or Low",
+    "identification_reasoning": "Step by step: which peaks led to which functional groups, and how that identifies the compound",
+    "possible_alternatives": "Other compounds it could be",
+    "functional_groups": ["hydroxyl", "alkyl", "carbonyl"],
+    "sample_type": "KBR DISC or LIQUID FILM or Unknown",
     "major_peaks": [
-      {"wavenumber": 3408, "transmittance": 5, "assignment": "O-H stretch — indicates hydroxyl group"}
+      {"wavenumber": 3408, "transmittance": 5, "assignment": "O-H stretch — hydroxyl group"}
     ],
-    "curve_description": "Describe the full curve: where it starts, where big troughs are, flat regions, dense peak clusters, overall shape",
+    "curve_description": "Full curve description from 4000 to 500 cm-1",
     "key_regions": {
-      "4000_2500": "Detailed description of what peaks appear here and what they mean",
-      "2500_1500": "Detailed description of this region",
-      "1500_500": "Fingerprint region — describe the pattern in detail"
+      "4000_2500": "What peaks appear here and what they mean",
+      "2500_1500": "Description of this region",
+      "1500_500": "Fingerprint region pattern"
     }
   },
   "image2": {
-    "compound_name": "Scientific identification from curve analysis",
-    "chemical_formula": "Chemical formula",
-    "identification_confidence": "High / Medium / Low",
-    "identification_reasoning": "Step by step reasoning from curve to compound",
-    "possible_alternatives": "Other possible compounds",
-    "sample_type": "sample type if visible",
-    "major_peaks": [
-      {"wavenumber": 3342, "transmittance": 81, "assignment": "functional group assignment"}
-    ],
-    "curve_description": "Full curve description",
-    "key_regions": {
-      "4000_2500": "description",
-      "2500_1500": "description",
-      "1500_500": "fingerprint region description"
-    }
+    "compound_name": "Scientific identification",
+    "chemical_formula": "Formula",
+    "molecular_weight": "g/mol",
+    "smiles": "SMILES",
+    "identification_confidence": "High or Medium or Low",
+    "identification_reasoning": "Step by step reasoning",
+    "possible_alternatives": "Alternatives",
+    "functional_groups": ["group1", "group2"],
+    "sample_type": "type",
+    "major_peaks": [{"wavenumber": 3342, "transmittance": 81, "assignment": "assignment"}],
+    "curve_description": "Full description",
+    "key_regions": {"4000_2500": "desc","2500_1500": "desc","1500_500": "desc"}
   },
   "comparison": {
     "similarity_score": 15,
     "is_same_compound": false,
     "accuracy_100_percent": false,
-    "accuracy_explanation": "Detailed explanation of why these are or are not the same compound",
-    "matching_peaks": [
-      {"wavenumber_img1": 3408, "wavenumber_img2": 3342, "difference": 66, "note": "Both show O-H stretch indicating hydroxyl group in both compounds"}
-    ],
-    "non_matching_peaks": [
-      {"wavenumber": 1710, "present_in": "image1 only", "note": "C=O carbonyl stretch — compound 1 has ketone/ester, compound 2 does not"}
-    ],
-    "trough_crest_comparison": "Detailed scientific comparison of where troughs and crests occur — which wavenumber positions match and which do not",
+    "accuracy_explanation": "Detailed explanation",
+    "matching_peaks": [{"wavenumber_img1": 3408, "wavenumber_img2": 3342, "difference": 66, "note": "Both show O-H stretch"}],
+    "non_matching_peaks": [{"wavenumber": 1710, "present_in": "image1 only", "note": "C=O carbonyl absent in image2"}],
+    "trough_crest_comparison": "Scientific comparison of trough and crest positions in both spectra",
     "curve_up_down_analysis": {
-      "image1_pattern": "Detailed up-down pattern: e.g. high at 4000, sharp deep trough at 3400 (O-H), rises to 2800, moderate trough at 2900 (C-H), flat at 2300-2000, multiple sharp troughs at 1700 (C=O) and 1000-1500 (fingerprint)",
-      "image2_pattern": "Detailed up-down pattern for image 2",
-      "how_similar": "Scientific assessment of how similar the two curve patterns are"
+      "image1_pattern": "Detailed: high at 4000, deep trough at 3400 O-H, rises, trough at 2900 C-H, flat at 2300-2000, peaks at 1710 C=O, complex fingerprint 500-1500",
+      "image2_pattern": "Detailed pattern for image 2",
+      "how_similar": "Scientific assessment of curve pattern similarity"
     },
-    "similarities": [
-      "Both show broad absorption in 3000-3500 region indicating O-H or N-H groups",
-      "Both have C-H stretching peaks around 2900 cm-1"
-    ],
-    "differences": [
-      "Compound 1 has strong C=O peak at 1710 cm-1 absent in Compound 2",
-      "Compound 2 has complex fingerprint region suggesting aromatic structure"
-    ],
-    "functional_groups_comparison": "Compare all functional groups identified in each compound and explain what chemical differences this reveals",
-    "conclusion": "Final scientific conclusion: what are these two compounds, how similar or different are they chemically, and what does this comparison tell a chemist about their structures and properties"
+    "similarities": ["Both show C-H stretching around 2900 cm-1", "Both have absorption in fingerprint region"],
+    "differences": ["Compound 1 has C=O at 1710 absent in Compound 2", "Different fingerprint patterns confirm different compounds"],
+    "functional_groups_comparison": "Compare all functional groups and what chemical differences they reveal",
+    "conclusion": "Final scientific conclusion: compound identities, similarity, and what this means chemically"
   }
 }"""
 
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     payload = {
         "model": MODEL,
-        "max_tokens": 3000,
+        "max_tokens": 4000,
         "messages": [{"role": "user", "content": [
             {"type": "image_url", "image_url": {"url": f"data:{mt1};base64,{img1_b64}"}},
             {"type": "image_url", "image_url": {"url": f"data:{mt2};base64,{img2_b64}"}},
@@ -147,6 +145,7 @@ Return ONLY valid JSON, no markdown, no extra text:
 
 
 def append_csv(img1_name, img2_name, result):
+    """Save analysis history to CSV"""
     file_exists = os.path.exists(RESULTS_CSV)
     with open(RESULTS_CSV, "a", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -170,6 +169,48 @@ def append_csv(img1_name, img2_name, result):
         ])
 
 
+def append_library(img_name, compound_data, result_data):
+    """Save compound to library CSV - organised collection of all analyzed compounds"""
+    file_exists = os.path.exists(LIBRARY_CSV)
+    with open(LIBRARY_CSV, "a", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        if not file_exists:
+            w.writerow([
+                "date_added", "image_filename",
+                "compound_name", "molecular_formula", "molecular_weight",
+                "smiles", "functional_groups", "sample_type",
+                "identification_confidence", "identification_reasoning",
+                "possible_alternatives",
+                "peak_1_wavenumber", "peak_1_assignment",
+                "peak_2_wavenumber", "peak_2_assignment",
+                "peak_3_wavenumber", "peak_3_assignment",
+                "curve_description", "reference_source"
+            ])
+        peaks = compound_data.get("major_peaks", [])
+        fg = compound_data.get("functional_groups", [])
+        w.writerow([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            img_name,
+            compound_data.get("compound_name", "Unknown"),
+            compound_data.get("chemical_formula", ""),
+            compound_data.get("molecular_weight", ""),
+            compound_data.get("smiles", ""),
+            ", ".join(fg) if isinstance(fg, list) else str(fg),
+            compound_data.get("sample_type", ""),
+            compound_data.get("identification_confidence", ""),
+            compound_data.get("identification_reasoning", "")[:300],
+            compound_data.get("possible_alternatives", ""),
+            peaks[0]["wavenumber"] if len(peaks) > 0 else "",
+            peaks[0]["assignment"] if len(peaks) > 0 else "",
+            peaks[1]["wavenumber"] if len(peaks) > 1 else "",
+            peaks[1]["assignment"] if len(peaks) > 1 else "",
+            peaks[2]["wavenumber"] if len(peaks) > 2 else "",
+            peaks[2]["assignment"] if len(peaks) > 2 else "",
+            compound_data.get("curve_description", "")[:300],
+            "SpectraLens IR Analysis"
+        ])
+
+
 def run_batch_job(job_id, file_pairs):
     JOBS[job_id]["status"] = "running"
     results = []
@@ -179,6 +220,11 @@ def run_batch_job(job_id, file_pairs):
         try:
             result = analyze_pair(p1, p2, n1, n2)
             append_csv(n1, n2, result)
+            # Save both compounds to library
+            if result.get("image1"):
+                append_library(n1, result["image1"], result)
+            if result.get("image2"):
+                append_library(n2, result["image2"], result)
             results.append({"pair_index": i, "image1_name": n1, "image2_name": n2, "status": "done", "result": result})
         except Exception as e:
             results.append({"pair_index": i, "image1_name": n1, "image2_name": n2, "status": "error", "error": str(e)})
@@ -246,7 +292,8 @@ def job_status(job_id):
     if job_id not in JOBS:
         return jsonify({"error": "Job not found"}), 404
     job = JOBS[job_id]
-    return jsonify({"status": job["status"], "progress": job["progress"], "total": job["total"], "results": job["results"], "mode": job.get("mode"), "num_images": job.get("num_images")})
+    return jsonify({"status": job["status"], "progress": job["progress"], "total": job["total"],
+                    "results": job["results"], "mode": job.get("mode"), "num_images": job.get("num_images")})
 
 
 @app.route("/history")
@@ -260,11 +307,31 @@ def history():
     return jsonify(rows[-200:])
 
 
+@app.route("/library")
+def library():
+    """Return compound library as JSON"""
+    if not os.path.exists(LIBRARY_CSV):
+        return jsonify([])
+    rows = []
+    with open(LIBRARY_CSV, "r", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            rows.append(row)
+    return jsonify(rows)
+
+
 @app.route("/export-csv")
 def export_csv():
     if os.path.exists(RESULTS_CSV):
         return send_from_directory("results", "analysis_history.csv", as_attachment=True)
     return jsonify({"error": "No data yet"}), 404
+
+
+@app.route("/export-library")
+def export_library():
+    """Download the compound library CSV"""
+    if os.path.exists(LIBRARY_CSV):
+        return send_from_directory("results", "compound_library.csv", as_attachment=True)
+    return jsonify({"error": "No library data yet. Run some analyses first."}), 404
 
 
 if __name__ == "__main__":
